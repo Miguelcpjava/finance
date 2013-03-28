@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Informações sobre Finance v#{sistema.VERSION}</title>
+    </h:head>
+     <h:body style="background-color: #CE8B3A">
+         <h:form id="formuser">
+              <p:messages id="msguser" autoUpdate="true" closable="true"/>
+              <h:link outcome="/menu/principal.jsf" value="Voltar" style="font-weight: bold; color: white;"/>
+             <p:dataTable value="#{usuarioFaces.listofUser}" var="usuario" rowKey="#{usuario.id}" selectionMode="single" emptyMessage="Não existe usuários cadastrados!"
+                          paginator="true" id="datauser" selection="#{usuarioFaces.selectedUsuarios}" >
+                 <p:ajax event="rowSelect" update=":formuser:seluser :formuser:displaycaduser" oncomplete="caduser.show()"/>
+                 <f:facet name="header">
+                     Panel de Controle dos usuários
+                 </f:facet>
+                
+                 <p:column headerText="Status">
+                     <center>
+                     <h:graphicImage value="/images/userativo32.png" height="32" width="32" title="Usuário Ativo" rendered="#{usuario.status eq 'true'}" /> 
+                      <h:graphicImage value="/images/userinativo32.png" height="32" width="32" title="Usuário Inativo" rendered="#{usuario.status eq 'false'}" /> 
+                     </center>
+                 </p:column>
+                 <p:column headerText="Login">
+                     #{usuario.login}
+                 </p:column>
+                 <p:column headerText="Nome">
+                     #{usuario.nome}
+                 </p:column>
+                 <p:column headerText="Sobrenome">
+                     #{usuario.sobrenome}
+                 </p:column>
+                 <p:column headerText="Idade">
+                     #{usuario.idadeUser()}
+                 </p:column>
+                 <p:column headerText="Data de Cadastro">
+                     #{usuario.datadecadastro}
+                 </p:column>
+                  <f:facet name="footer">
+                    Financé v#{sistema.VERSION}
+                </f:facet>
+             </p:dataTable>
+              <center>
+            
+             <h:outputText id="seluser" style=" bottom: 0; position: fixed;  
+                           color: white; font-weight: bold; font-size: x-large" 
+                           value="Usuário selecionado #{usuarioFaces.selectedUsuarios.toString()}"/>
+             </center>
+             <p:dialog id="displaycaduser" widgetVar="caduser" header="Detalhes do Cadastro do Usuário" showEffect="fade" hideEffect="explode">
+                 <p:panelGrid id="pnlcaduser" columns="4">
+                     <p:outputLabel for="iduser" value="ID: "/>
+                     <p:inputText id="iduser" value="#{usuarioFaces.selectedUsuarios.id}"/>
+                      <p:outputLabel for="nomeuser" value="Nome: "/>
+                <p:inputText id="nomeuser" value="#{usuarioFaces.selectedUsuarios.nome}"/> 
+                <p:outputLabel for="sobrenomeuser" value="Sobrenome: "/>
+                <p:inputText id="sobrenomeuser" value="#{usuarioFaces.selectedUsuarios.sobrenome}"/> 
+                <p:outputLabel for="Loginuser" value="Login: "/>
+                <p:inputText id="Loginuser"  value="#{usuarioFaces.selectedUsuarios.login}"/> 
+                <p:outputLabel for="passuser" value="Senha: "/>
+                <p:password id="passuser"  value="#{usuarioFaces.selectedUsuarios.password}"/>
+                <p:outputLabel for="emailuser" value="Email: "/>
+                <p:inputText id="emailuser" /> 
+                
+                <p:outputLabel for="nascimentouser" value="Data de Nascimento: "/>
+                
+                <p:calendar id="nascimentouser" value="#{usuarioFaces.selectedUsuarios.datanascimento}"/>
+                <p:outputLabel for="funcaouser" value="Função: "/>
+                <p:selectOneMenu id="funcaouser" >
+                    <f:selectItem itemLabel="|| - Selecione - ||"/>
+                    
+                </p:selectOneMenu>
+                <p:outputLabel for="enableuser" value="Ativo: "/>
+                <p:selectBooleanButton id="enableuser" offLabel="Desativado" onLabel="Ativado" value="#{usuarioFaces.selectedUsuarios.status}"/>
+                     <f:facet name="footer">
+                         <center>
+                         <p:commandButton value="Atualizar" action="#{usuarioFaces.updateUser()}" update=":formuser:datauser"/>
+                         <p:commandButton value="Deletar" action="#{usuarioFaces.deleteUser()}" update=":formuser:datauser"/>
+                         </center>
+                     </f:facet>
+                     
+                 </p:panelGrid>
+             </p:dialog>              
+         </h:form>
+     </h:body>
+    </html>

@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Cadastro de Dividas do #{sistema.NOMESISTEMA}</title>
+    </h:head>
+    <h:body style="background-color: #CE8B3A">
+        <h:form id="formdivida">
+            <h:link outcome="/menu/principal.jsf" value="Voltar" style="font-weight: bold; color: white;"/>
+            <p:messages autoUpdate="true" closable="true" showDetail="true" id="warn"/>
+            <center>
+                <p:panelGrid columns="2" style="width: 60%;" id="pnldivida">
+                <f:facet name="header">
+                    Cadastro de Dívida
+                </f:facet>
+            <p:outputLabel for="divida" value="Descricao da divida: "/>
+            <p:inputText id="divida" size="90" value="#{dividaFaces.selectedDivida.descricao}"/>
+            <p:outputLabel for="datainicio" value="Data inicio: "/>
+            <p:calendar id="datainicio" locale="pt" showButtonPanel="true" navigator="true" value="#{dividaFaces.selectedDivida.datadeinicio}"/>
+            <p:outputLabel for="parcelas" value="Parcelas: "/>
+            <p:inputText id="parcelas" value="#{dividaFaces.selectedDivida.parcelas}"/>
+            <p:outputLabel for="operacao" value="Operação: "/>
+            <p:selectOneMenu id="operacao" value="#{dividaFaces.selectedDivida.operacao}">
+                <f:selectItem itemLabel="|| - Selecione - || "/>
+                <f:selectItem itemLabel="Pagamento" itemValue="Pagamento"/>
+                <f:selectItem itemLabel="Recebimento" itemValue="Recebimento"/>
+                <f:selectItem itemLabel="Transferência" itemValue="Transferencia"/>
+            </p:selectOneMenu>
+            <p:outputLabel for="tipolanc" value="Tipo Lançamento: "/>
+            <p:selectOneMenu id="tipolanc" value="#{dividaFaces.selectedDivida.tipolancamento}">
+                <f:selectItem itemLabel="|| - Selecione - || "/>
+                <f:selectItem itemLabel="Receita" itemValue="R"/>
+                <f:selectItem itemLabel="Despesa" itemValue="D"/>
+            </p:selectOneMenu> 
+            <p:outputLabel for="empresa" value="Empresa"/>
+            <p:inputText id="empresa" size="90" value="#{dividaFaces.selectedDivida.empresa}"/>
+            <p:outputLabel for="vencimento" value="Vencimento: "/>
+            <p:calendar id="vencimento" mindate=":pnldivida:datainicio" locale="br" showButtonPanel="true" navigator="true" value="#{dividaFaces.selectedDivida.vencimento}"/>
+            <p:outputLabel for="exercicio" value="Exercício: "/>
+            <p:inputMask id="exercicio" mask="99/9999" value="#{dividaFaces.selectedDivida.exercicio}"/>
+            <p:outputLabel for="observ" value="Observação: "/>
+            <p:inputTextarea id="observ" style="width: 80%" maxlength="250" value="#{dividaFaces.selectedDivida.observacao}"/>
+            
+            <f:facet name="footer">
+                <center>
+                    <p:commandButton value="Inserir" action="#" />
+                    <p:commandButton value="Salvar" action="#{dividaFaces.addingDivida()}" update=":formdivida:warn"/> 
+                    <br/> 
+                    
+                #{sistema.NOMESISTEMA} v#{sistema.VERSION}
+                </center>
+            </f:facet>
+            </p:panelGrid>
+                </center>
+        </h:form>
+    </h:body>
+</html>

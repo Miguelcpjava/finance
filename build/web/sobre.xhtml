@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Informações sobre Finance v#{sistema.VERSION}</title>
+        <style type="text/css">
+            div{
+                background-color: white;
+                border-radius: 14px;
+                padding: 10%;
+                margin: 15px;
+                color: #CE8B3A;
+                font-weight: bold;
+                text-decoration: blink;
+            }
+        </style>
+    </h:head>
+    <h:body style="background-color: #CE8B3A">
+        <h:form>
+            <p:fieldset legend="About Financé">
+            <div>
+                <center>
+                    <h:panelGrid columns="2">
+                        <h:column>
+                            Nome do sistema:
+                        </h:column>
+                        <h:column>
+                            #{sistema.NOMESISTEMA}
+                        </h:column>
+                        <h:column>
+                            Versão do Sistema:
+                        </h:column>
+                        <h:column>
+                            #{sistema.VERSION}
+                        </h:column>
+                        <h:column>
+                            Versão da Atualização:
+                        </h:column>
+                        <h:column>
+                            #{sistema.VERSION_UPDATE}
+                        </h:column>
+                        <h:column>
+                            Data da atualização:
+                        </h:column>
+                        <h:column>
+                            #{sistema.DATA_UPDATE}
+                        </h:column>
+                        
+                    </h:panelGrid>
+                    <br/>
+                    <center>
+                        <h2>Sistema Básico de Controle Financeiro Pessoal</h2>
+                        <h3>Sugetões cadastre uma Issue no site <a href="https://github.com/Miguelcpjava/finance/issues"> Projeto Finance</a></h3>
+                        <h3>Para cadastrar uma Issue Aperte em New Issue se não conseguir envie um email para miguellima@aljug.com.br</h3>
+                        <p:clock pattern="dd.MM.yyyy HH:mm:ss "/>
+                        </center><br/>
+                     <h:link outcome="/menu/principal.jsf" value="Voltar" style="font-weight: bold; color: #CE8B3A;"/>
+                </center>
+            </div>
+                </p:fieldset>
+        </h:form>
+        
+    </h:body>
+</html>
+

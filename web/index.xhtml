@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Financé v0.1</title>
+    </h:head>
+    <h:body style="background-color: #CE8B3A">
+        <h:form id="formfinanc">
+            
+        <br />
+        
+        <center>
+            <p:panel  header="Bem vindo ao Financé || Versão #{sistema.VERSION}"  toggleTitle="Login" >
+                <h:panelGrid columns="2">
+                    <p:outputLabel for="loginuser" value="Login: "/>
+                    <p:inputText id="loginuser" required="true" requiredMessage="Campo login não pode está vazio"/>
+                    <p:outputLabel for="passuser" value="Senha: "/>
+                    <p:password id="passuser" required="true" requiredMessage="Campo senha não pode está vazio"/>
+                    <h:outputText/>
+                    <p:commandButton value="Entrar" action="#"/>
+                </h:panelGrid>   
+             </p:panel>
+            
+        <h:link rel="http://miguellimapj.blogspot.com"  value="Página do Blog do Desenvolvedor" />
+        </center>
+        </h:form>
+    </h:body>
+</html>
+
+

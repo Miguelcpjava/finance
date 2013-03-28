@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Bem vindo ao #{sistema.NOMESISTEMA} #{sistema.VERSION}</title>
+         <style type="text/css">
+            .link:hover{
+                background-color:  #CE8B3A;
+                
+            }
+        </style>
+        <script>
+            function mascara(o, f) {
+              v_obj = o;
+              v_fun = f;
+              setTimeout("execmascara()", 1);
+            }
+
+            function execmascara() {
+              v_obj.value = v_fun(v_obj.value);
+            }
+
+         function valor(v) {
+        v = v.replace(/\D/g, "");
+        v = v.replace(/[0-9]{15}/, "invÃ¡lido");
+        v = v.replace(/(\d{1})(\d{11})$/, "$1.$2"); // coloca ponto antes dos
+        // Ãºltimos 11 digitos
+        v = v.replace(/(\d{1})(\d{8})$/, "$1.$2"); // coloca ponto antes dos
+        // Ãºltimos 8 digitos
+        v = v.replace(/(\d{1})(\d{5})$/, "$1.$2"); // coloca ponto antes dos
+        // Ãºltimos 5 digitos
+        v = v.replace(/(\d{1})(\d{1,2})$/, "$1.$2"); // coloca virgula antes dos
+        // Ãºltimos 2 digitos
+        return v;
+}
+
+                    </script>
+    </h:head>
+    <h:body style="background-color: #CE8B3A">
+        <h:form id="formmain">
+            <p:menubar id="menuprincipal">
+                <p:submenu label="Cadastro">
+                    <p:menuitem value="Divida" outcome="/cadastro/divida.jsf">
+                    </p:menuitem>
+                   
+                     <p:menuitem value="Usuário" outcome="/cadastro/usuario.jsf" >
+                         
+                    </p:menuitem>
+                     <p:separator/>
+                     <p:menuitem value="LogOff" outcome="/index.jsf"/>
+                </p:submenu>
+                <p:submenu label="Administração">
+                    <p:submenu label="Panel de Controle">
+                        <p:menuitem value="Usuário" outcome="/admin/panelusuario.jsf"/>
+                    </p:submenu>
+                </p:submenu>
+                <p:submenu label="Relatórios"></p:submenu>
+                <p:submenu label="Ajuda">
+                    <p:menuitem value="Sobre" outcome="/sobre.jsf"/>
+                </p:submenu>
+            </p:menubar>
+            
+            <p:messages autoUpdate="true" closable="true"  id="avisos"/>
+            <p:dataTable id="paneluser" value="#{dividaFaces.listofDivida}" var="divida" selection="#{dividaFaces.selectedDivida}"
+                         emptyMessage="Não existe Dívida" paginator="true" rows="10">
+                <f:facet name="header">
+                    Panel de Dívidas Cadastradas
+                </f:facet>
+                <p:column headerText="ID">
+                    #{divida.id}
+                </p:column>
+                <p:column headerText="Descricão">
+                    #{divida.descricao}
+                </p:column>
+              <p:column id="pagar" headerText="Tela de Pagamento">
+                  <p:commandButton value="Pagar" id="botaopagar" oncomplete="pagetela.show()" update=":formmain:telapagamento">
+                        <f:setPropertyActionListener value="#{divida}" target="#{dividaFaces.selectedDivida}" />  
+                    </p:commandButton>
+                </p:column>
+                <f:facet name="footer">
+                    Financé v#{sistema.VERSION}
+                </f:facet>
+            </p:dataTable>
+             <p:dialog id="telapagamento" widgetVar="pagetela" header="Coloque os dados de pagamento">
+                <p:panelGrid columns="2" id="pnlpag">
+                    <p:outputLabel for="despesa" value="Dívida: "/>
+                    <h:outputText id="despesa" value="#{dividaFaces.selectedDivida.id}"/>
+                    <p:outputLabel for="coddivida" value="Cod. Divida: "/>
+                    <p:selectOneMenu id="coddivida" value="#{pagamentoFaces.selectedPagamento.divida}">
+                         <f:selectItem itemLabel="|| - Selecione - || "/>
+                         <f:selectItems var="dpag" value="#{dividaFaces.listofDivida}" itemLabel="#{dpag.descricao}" itemValue="#{dpag.id}"/>
+                         
+                    </p:selectOneMenu>
+                     <p:outputLabel for="venc" value="Vencimento: "/>
+                     <h:outputText id="venc" value="#{dividaFaces.selectedDivida.vencimento}">
+                         <f:convertDateTime pattern="dd/MM/yy"/>
+                     </h:outputText>
+                     
+                    <p:outputLabel for="datapagamento" value="Data do Pagamento: "/>
+                    <p:calendar id="datapagamento" value="#{pagamentoFaces.selectedPagamento.datapagamento}"/>
+                    <p:outputLabel for="valorpagamento" value="Valor do pagamento: "/>
+                    <p:inputText id="valorpagamento" onkeypress="mascara(this, valor);" value="#{pagamentoFaces.selectedPagamento.valor}"/>
+                    <p:outputLabel for="pgto" value="Forma de Pagamento:"/>
+                    <p:selectOneMenu id="pgto" value="#{pagamentoFaces.selectedPagamento.formapagamento}">
+                         <f:selectItem itemLabel="|| - Selecione - || "/>
+                         <f:selectItem itemLabel="Cartão" itemValue="Cartao"/>
+                         <f:selectItem itemLabel="Boleto" itemValue="Boleto"/>
+                         <f:selectItem itemLabel="Espécie" itemValue="Especie"/>
+                         <f:selectItem itemLabel="Cheque" itemValue="Cheque"/>
+                         <f:selectItem itemLabel="Tranferência" itemValue="Transferencia"/>
+                    </p:selectOneMenu>
+                    
+                     <f:facet name="footer">
+                         <p:commandButton value="Gravar" action="#{pagamentoFaces.addingPay()}" update=":formmain:avisos"/>
+                </f:facet>
+                    
+                </p:panelGrid>
+                
+            </p:dialog>
+        </h:form>
+        
+    </h:body>
+</html>
+
