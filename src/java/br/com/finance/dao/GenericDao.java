@@ -32,7 +32,14 @@ public class GenericDao {
         sessao.beginTransaction().commit();
         sessao.close();
     }
-
+    
+    protected void savingWithOutUpdate(Serializable pojo){
+        Session sessao = getSesseion();
+        sessao.save(pojo);
+        sessao.beginTransaction().commit();
+        sessao.close();
+    }
+    
     protected void updatePojo(Serializable pojo) {
         this.session = getSesseion();
         this.session.beginTransaction();

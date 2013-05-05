@@ -16,13 +16,14 @@ import javax.faces.convert.FacesConverter;
  *
  * @author Miguel
  */
-@FacesConverter(forClass = Divida.class)
+@FacesConverter(value="dividaConverter",forClass = Divida.class)
 public class DividaConverter implements Converter{
 
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
        if(value != null && value.trim().length() > 0){
            Integer codigo = Integer.valueOf(value);
+           System.out.println("CONVERTENDO VALOR DE STRING E BUSCANDO O CODIGO "+codigo);
            try{
                DividaDAO dividaDAO = new DividaDAO();
                return dividaDAO.getDivida(codigo);
@@ -36,10 +37,11 @@ public class DividaConverter implements Converter{
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object value) {
        if(value != null){
+           System.out.println("CONVERTENDO PARA STRING " + value);
            Divida divida =  (Divida) value;
-           
-           return divida.getDescricao();
-       }
+           //System.out.println("CONVERTENDO PARA STRING " + String.valueOf(divida.getId()));
+           return divida.toString();
+       }else
        return "";
     }
     

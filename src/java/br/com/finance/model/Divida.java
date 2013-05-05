@@ -18,6 +18,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.persistence.Transient;
 
 /**
  *
@@ -35,7 +36,7 @@ public class Divida implements Serializable{
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    @Column(name = "iddivida")
-   private int id;
+   private Integer id;
    @Column(name="descricaodespesa")
    private String descricao;
    @Column(name="datadeinicio")
@@ -59,6 +60,8 @@ public class Divida implements Serializable{
    private String exercicio;
    @Column(name="observacao")
    private String observacao;
+   @Transient
+   private boolean ativador;
    /**
     * Uma divida pode ter vários pagamentos e um ou mais de um pagamento 
     * pertence a  uma divida.
@@ -71,11 +74,11 @@ public class Divida implements Serializable{
     public Divida() {
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -124,6 +127,14 @@ public class Divida implements Serializable{
     }
 
     public void setTipolancamento(String tipolancamento) {
+        System.out.println("Mudando");
+        System.out.println(tipolancamento);
+        if(tipolancamento.equals("D")){
+            ativador = true;
+            System.out.println(ativador);
+        }else{
+            ativador = false;
+            System.out.println(ativador);}
         this.tipolancamento = tipolancamento;
     }
 
@@ -150,28 +161,35 @@ public class Divida implements Serializable{
     public void setObservacao(String observacao) {
         this.observacao = observacao;
     }
-
- /*   public List<Pagamento> getPagamento() {
-        return pagamento;
+    
+    /*   public List<Pagamento> getPagamento() {
+    return pagamento;
+    }
+    public void setPagamento(List<Pagamento> pagamento) {
+    this.pagamento = pagamento;
+    }*/
+    public boolean isAtivador() {
+        return ativador;
     }
 
-    public void setPagamento(List<Pagamento> pagamento) {
-        this.pagamento = pagamento;
-    }*/
-
+    public void setAtivador(boolean ativador) {
+        this.ativador = ativador;
+    }
+    
+     
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 17 * hash + this.id;
-        hash = 17 * hash + (this.descricao != null ? this.descricao.hashCode() : 0);
-        hash = 17 * hash + (this.datadeinicio != null ? this.datadeinicio.hashCode() : 0);
-        hash = 17 * hash + this.parcelas;
-        hash = 17 * hash + (this.operacao != null ? this.operacao.hashCode() : 0);
-        hash = 17 * hash + (this.tipolancamento != null ? this.tipolancamento.hashCode() : 0);
-        hash = 17 * hash + (this.empresa != null ? this.empresa.hashCode() : 0);
-        hash = 17 * hash + (this.vencimento != null ? this.vencimento.hashCode() : 0);
-        hash = 17 * hash + (this.exercicio != null ? this.exercicio.hashCode() : 0);
-        hash = 17 * hash + (this.observacao != null ? this.observacao.hashCode() : 0);
+        int hash = 3;
+        hash = 67 * hash + (this.id != null ? this.id.hashCode() : 0);
+        hash = 67 * hash + (this.descricao != null ? this.descricao.hashCode() : 0);
+        hash = 67 * hash + (this.datadeinicio != null ? this.datadeinicio.hashCode() : 0);
+        hash = 67 * hash + this.parcelas;
+        hash = 67 * hash + (this.operacao != null ? this.operacao.hashCode() : 0);
+        hash = 67 * hash + (this.tipolancamento != null ? this.tipolancamento.hashCode() : 0);
+        hash = 67 * hash + (this.empresa != null ? this.empresa.hashCode() : 0);
+        hash = 67 * hash + (this.vencimento != null ? this.vencimento.hashCode() : 0);
+        hash = 67 * hash + (this.exercicio != null ? this.exercicio.hashCode() : 0);
+        hash = 67 * hash + (this.observacao != null ? this.observacao.hashCode() : 0);
         return hash;
     }
 
@@ -184,7 +202,7 @@ public class Divida implements Serializable{
             return false;
         }
         final Divida other = (Divida) obj;
-        if (this.id != other.id) {
+        if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
             return false;
         }
         if ((this.descricao == null) ? (other.descricao != null) : !this.descricao.equals(other.descricao)) {
@@ -216,13 +234,8 @@ public class Divida implements Serializable{
         }
         return true;
     }
-    
-    
     @Override
     public String toString() {
-        return  id + " - " + descricao;
-    }
-    
-    
-
+        return  String.valueOf(id);
+         }
 }

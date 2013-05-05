@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Cadastro de Pagamentos do #{sistema.NOMESISTEMA}</title>
+           <script>
+            function mascara(o, f) {
+              v_obj = o;
+              v_fun = f;
+              setTimeout("execmascara()", 1);
+            }
+
+            function execmascara() {
+              v_obj.value = v_fun(v_obj.value);
+            }
+
+         function valor(v) {
+        v = v.replace(/\D/g, "");
+        v = v.replace(/[0-9]{15}/, "invÃ¡lido");
+        v = v.replace(/(\d{1})(\d{11})$/, "$1.$2"); // coloca ponto antes dos
+        // Ãºltimos 11 digitos
+        v = v.replace(/(\d{1})(\d{8})$/, "$1.$2"); // coloca ponto antes dos
+        // Ãºltimos 8 digitos
+        v = v.replace(/(\d{1})(\d{5})$/, "$1.$2"); // coloca ponto antes dos
+        // Ãºltimos 5 digitos
+        v = v.replace(/(\d{1})(\d{1,2})$/, "$1.$2"); // coloca virgula antes dos
+        // Ãºltimos 2 digitos
+        return v;
+}
+
+                    </script>
+    </h:head>
+    <h:body style="background-color: #CE8B3A">
+        <h:form id="pagform">
+            <p:messages closable="true" id="avisos1" autoUpdate="true"/>
+            <p:panelGrid columns="2" id="pnlpag">
+
+                    <p:outputLabel for="datapagamento" value="Data do Pagamento: "/>
+                    <p:calendar id="datapagamento" value="#{pagamentoFaces.selectedPagamento.datapagamento}"/>
+
+                    <p:outputLabel for="valorpagamento" value="Valor do pagamento: "/>
+                    <p:inputText id="valorpagamento" onkeypress="mascara(this, valor);" value="#{pagamentoFaces.selectedPagamento.valor}"/>
+
+
+                    <p:outputLabel for="pgto" value="Forma de Pagamento:"/>
+                    <p:selectOneMenu id="pgto" value="#{pagamentoFaces.selectedPagamento.formapagamento}">
+                        <f:selectItem itemLabel="|| - Selecione - || "/>
+                        <f:selectItem itemLabel="Cartão" itemValue="Cartao"/>
+                        <f:selectItem itemLabel="Boleto" itemValue="Boleto"/>
+                        <f:selectItem itemLabel="Espécie" itemValue="Especie"/>
+                        <f:selectItem itemLabel="Cheque" itemValue="Cheque"/>
+                        <f:selectItem itemLabel="Tranferência" itemValue="Transferencia"/>
+                    </p:selectOneMenu>
+                    
+                    <p:outputLabel for="dividaid" value="Divida ID:"/>
+                    <p:selectOneMenu id="dividaid" value="#{pagamentoFaces.selectedPagamento.divida}" converter="dividaConverter">
+                        <f:selectItem itemLabel="|| - Selecione - || "/>
+                        <f:selectItems value="#{pagamentoFaces.optionList}" var="pag" itemLabel="#{pag.label}" itemValue="#{pag.value}"/>
+                    </p:selectOneMenu>
+                   
+                    
+                    <f:facet name="footer">
+                        <center>
+                            <p:commandButton value="Inserir" action="#{pagamentoFaces.newPay()}" update=":pagform:avisos1" immediate="true"/>    
+                            <p:commandButton value="Gravar" action="#{pagamentoFaces.addingPayInNewDisplay()}" update=":pagform:avisos1 :pagform:pnlpag"/>
+                        </center>
+                    </f:facet>
+
+                </p:panelGrid>
+        </h:form>
+    </h:body>
+</html>
+

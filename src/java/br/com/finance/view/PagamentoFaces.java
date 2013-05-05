@@ -4,15 +4,18 @@
  */
 package br.com.finance.view;
 
+import br.com.finance.dao.DividaDAO;
 import br.com.finance.dao.PagamentoDAO;
 import br.com.finance.model.Divida;
 import br.com.finance.model.Pagamento;
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 
 /**
  *
@@ -36,13 +39,52 @@ public class PagamentoFaces implements Serializable{
       public void cleanPay(){
          selectedPagamento = null;
      }
+      
+     public List<SelectItem> getOptionList(){
+         List<Divida> ListOptionDivida = null;
+          List<SelectItem> toDataReturn = new LinkedList<SelectItem>();
+          DividaDAO divDAO = new DividaDAO();
+          try{
+              ListOptionDivida = divDAO.getDividas();
+              for (Divida dvd: ListOptionDivida){
+                  //dvd.getId(), dvd.getId()+' - '+dvd.getEmpresa()
+                  toDataReturn.add(new SelectItem(dvd,dvd.getEmpresa()));
+              }
+          }catch (Exception e){
+              e.printStackTrace();
+              e.getMessage();
+             
+          }
+          return toDataReturn;
+     } 
+      
+      public void newPay(){
+          selectedPagamento = new Pagamento();
+           msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Já pode inserir novos dados", null);
+            FacesContext.getCurrentInstance().addMessage("add", msg);
+      }
+      
+      public void addingPayInNewDisplay() throws Exception {
+
+        try {
+            selectedPagamento.setStatuspagamento("Pago");
+            pagDAO.addPagamentov2(selectedPagamento);
+            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Dados gravados com sucesso!", null);
+            FacesContext.getCurrentInstance().addMessage("add", msg);
+            ListOfPagamento = null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getMessage();
+            e.getLocalizedMessage();
+            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Dados não foi inserido com sucesso!", null);
+            FacesContext.getCurrentInstance().addMessage("add", msg);
+        }
+       }
        public void addingPay() throws Exception {
 
         try {
-             
-            //System.out.println("Divida Selecionada: "+selectedPagamento.);
-            System.out.println("OBSERVACAO - "+df.getSelectedDivida().getId());
-            System.out.println("Pagamento Divida "+selectedPagamento.getDivida().getId());
+          //System.out.println("Divida Selecionada: "+selectedPagamento.);
+          //System.out.println("Pagamento Divida "+selectedPagamento.getDivida().getId());
             pagDAO.addPagamento(selectedPagamento);
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Dados gravados com sucesso!", null);
             FacesContext.getCurrentInstance().addMessage("add", msg);
@@ -82,14 +124,16 @@ public class PagamentoFaces implements Serializable{
     } 
      
        public List<Pagamento> getListofPagamentos() {
-        System.out.println("Lista de Usuários: " + ListOfPagamento);
+        System.out.println("Lista de Pagamento: " + ListOfPagamento);
         if ((ListOfPagamento == null) || ListOfPagamento.isEmpty()) {
             ListOfPagamento = pagDAO.getPays();
             //ListOfDocumentos = documentDAO.listar(filtroAno, filtrocodDocumento, filtrotipo, filtroEntidade, filtroMes, filtrovalidade, filtroCliente);
         }
         return ListOfPagamento;
     }
-
+   /*    public int idDividia(){
+           df.fornecedordeID();
+       }*/
     public FacesMessage getMsg() {
         return msg;
     }
@@ -129,6 +173,7 @@ public class PagamentoFaces implements Serializable{
     public void setPagamentoID(int pagamentoID) {
         this.pagamentoID = pagamentoID;
     }
+    private static final long serialVersionUID = -8373616954008406359L;
        
        
 }

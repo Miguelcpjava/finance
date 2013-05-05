@@ -28,26 +28,28 @@ public class Pagamento implements Serializable {
    @Id 
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    @Column(name="idpagamento")
-   private int id;
+   private Integer id;
    @Temporal(javax.persistence.TemporalType.DATE)
    @Column(name="datapagamento")
    private Date datapagamento;
    @Column(name="valorpagamento")
    private double valor;
+   @Column(name="status")
+   private String statuspagamento;
    @Column(name="formapgto")
    private String formapagamento;
    @ManyToOne()
-   @JoinColumn(name = "iddivida", referencedColumnName = "iddivida")
+   @JoinColumn(name = "iddivida")
    private Divida divida;
  
     public Pagamento() {
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -74,7 +76,7 @@ public class Pagamento implements Serializable {
     public void setDivida(Divida divida) {
         this.divida = divida;
     }
-
+  
     public String getFormapagamento() {
         return formapagamento;
     }
@@ -83,12 +85,21 @@ public class Pagamento implements Serializable {
         this.formapagamento = formapagamento;
     }
 
+    public String getStatuspagamento() {
+        return statuspagamento;
+    }
+
+    public void setStatuspagamento(String statuspagamento) {
+        this.statuspagamento = statuspagamento;
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 97 * hash + this.id;
+        hash = 97 * hash + (this.id != null ? this.id.hashCode() : 0);
         hash = 97 * hash + (this.datapagamento != null ? this.datapagamento.hashCode() : 0);
         hash = 97 * hash + (int) (Double.doubleToLongBits(this.valor) ^ (Double.doubleToLongBits(this.valor) >>> 32));
+        hash = 97 * hash + (this.statuspagamento != null ? this.statuspagamento.hashCode() : 0);
         hash = 97 * hash + (this.formapagamento != null ? this.formapagamento.hashCode() : 0);
         hash = 97 * hash + (this.divida != null ? this.divida.hashCode() : 0);
         return hash;
@@ -103,13 +114,16 @@ public class Pagamento implements Serializable {
             return false;
         }
         final Pagamento other = (Pagamento) obj;
-        if (this.id != other.id) {
+        if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
             return false;
         }
         if (this.datapagamento != other.datapagamento && (this.datapagamento == null || !this.datapagamento.equals(other.datapagamento))) {
             return false;
         }
         if (Double.doubleToLongBits(this.valor) != Double.doubleToLongBits(other.valor)) {
+            return false;
+        }
+        if ((this.statuspagamento == null) ? (other.statuspagamento != null) : !this.statuspagamento.equals(other.statuspagamento)) {
             return false;
         }
         if ((this.formapagamento == null) ? (other.formapagamento != null) : !this.formapagamento.equals(other.formapagamento)) {
@@ -121,10 +135,10 @@ public class Pagamento implements Serializable {
         return true;
     }
 
-  
+    
+
     @Override
     public String toString() {
-        return  datapagamento + " " + valor;
+        return String.valueOf(id);
     }
-
 }
