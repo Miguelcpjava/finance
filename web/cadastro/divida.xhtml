@@ -17,7 +17,8 @@
                     Cadastro de Dívida
                 </f:facet>
             <p:outputLabel for="divida" value="Descricao da divida: "/>
-            <p:inputText id="divida" size="90" value="#{dividaFaces.selectedDivida.descricao}"/>
+            <p:inputText id="divida" size="90" value="#{dividaFaces.selectedDivida.descricao}">
+            </p:inputText>
             <p:outputLabel for="datainicio" value="Data inicio: "/>
             <p:calendar id="datainicio" locale="pt" showButtonPanel="true" navigator="true" value="#{dividaFaces.selectedDivida.datadeinicio}" required="true" requiredMessage="Este campo não pode ficar com valor nulo.">
                 <p:ajax event="dateSelect" update=":formdivida:vencimento"/>
@@ -27,12 +28,12 @@
                 <f:selectItem itemLabel="|| - Selecione - || "/>
                 <f:selectItem itemLabel="Receita" itemValue="R"/>
                 <f:selectItem itemLabel="Despesa" itemValue="D"/>
-                <p:ajax update="formdivida:vencimento formdivida:lblvencimento"/>
+                <p:ajax event="change" update=":formdivida" process="@this"/>
             </p:selectOneMenu> 
             <p:outputLabel for="parcelas" value="Parcelas: "/>
             <p:spinner id="parcelas" value="#{dividaFaces.selectedDivida.parcelas}" size="4" />
-            <p:outputLabel for="operacao" value="Operação: "/>
-            <p:selectOneMenu id="operacao" value="#{dividaFaces.selectedDivida.operacao}">
+            <p:outputLabel for="operacao" value="Operação: " rendered="#{dividaFaces.selectedDivida.tipolancamento eq 'D'}"/>
+            <p:selectOneMenu id="operacao" value="#{dividaFaces.selectedDivida.operacao}" rendered="#{dividaFaces.selectedDivida.tipolancamento eq 'D'}">
                 <f:selectItem itemLabel="|| - Selecione - || "/>
                 <f:selectItem itemLabel="Pagamento" itemValue="Pagamento"/>
                 <f:selectItem itemLabel="Recebimento" itemValue="Recebimento"/>
@@ -40,8 +41,8 @@
             </p:selectOneMenu>
             <p:outputLabel for="empresa" value="Empresa"/>
             <p:inputText id="empresa" size="90" value="#{dividaFaces.selectedDivida.empresa}"/>
-            <p:outputLabel for="vencimento" id="lblvencimento" value="Vencimento: " rendered="#{dividaFaces.resultadoAtivador()}"/>
-            <p:calendar id="vencimento" mindate="#{dividaFaces.selectedDivida.datadeinicio}" locale="pt" showButtonPanel="true" navigator="true" value="#{dividaFaces.selectedDivida.vencimento}" rendered="#{dividaFaces.resultadoAtivador}"/>
+            <h:outputText  id="lblvencimento" value="Vencimento: " rendered="#{dividaFaces.selectedDivida.tipolancamento eq 'D'}"/>
+            <p:calendar id="vencimento" mindate="#{dividaFaces.selectedDivida.datadeinicio}" locale="pt" showButtonPanel="true" navigator="true" value="#{dividaFaces.selectedDivida.vencimento}" rendered="#{dividaFaces.selectedDivida.tipolancamento eq 'D'}"/>
             <p:outputLabel for="exercicio" value="Exercício: " />
             <p:inputMask id="exercicio" mask="99/9999" value="#{dividaFaces.selectedDivida.exercicio}" />
             <p:outputLabel for="observ" value="Observação: "/>
@@ -49,7 +50,7 @@
 
             <f:facet name="footer">
                 <center>
-                    <h:outputText id="teste" value="#{dividaFaces.selectedDivida.tipolancamento}"/>
+                   
                     <p:commandButton value="Inserir" action="#" />
                     <p:commandButton value="Salvar" action="#{dividaFaces.addingDivida()}" /> 
                     <br/> 

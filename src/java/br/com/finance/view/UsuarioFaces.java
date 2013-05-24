@@ -6,7 +6,10 @@ package br.com.finance.view;
 
 import br.com.finance.dao.UsuarioDAO;
 import br.com.finance.model.Usuario;
+import br.com.finance.util.Criptografia;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
@@ -26,6 +29,7 @@ public class UsuarioFaces {
     private Usuario selectedUsuarios = new Usuario();
     private int UsuarioID;
     private boolean active = true;
+    Criptografia cripto = new Criptografia();
     
     public UsuarioFaces() {
     }
@@ -85,7 +89,21 @@ public class UsuarioFaces {
             FacesContext.getCurrentInstance().addMessage("add", msg);
         }
     } 
-
+     public String loginConnection(){
+         String criptografadoPass = null;
+         String conecta = null;
+        try {
+            criptografadoPass = cripto.encriptar(cripto.CHAVE, selectedUsuarios.getPassword());
+        } catch (Throwable ex) {
+            Logger.getLogger(UsuarioFaces.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try{
+         conecta = userDAO.validarLoginUser(selectedUsuarios.getLogin(), criptografadoPass);
+        }catch (Exception e){
+            e.getLocalizedMessage();
+        }
+        return conecta;
+     }
     public FacesMessage getMsg() {
         return msg;
     }

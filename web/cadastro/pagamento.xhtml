@@ -35,9 +35,26 @@
     </h:head>
     <h:body style="background-color: #CE8B3A">
         <h:form id="pagform">
+             <h:link outcome="/menu/principal.jsf" value="Voltar" style="font-weight: bold; color: white;"/>
             <p:messages closable="true" id="avisos1" autoUpdate="true"/>
+            <center>
             <p:panelGrid columns="2" id="pnlpag">
-
+                  <f:facet name="header">
+                    Cadastro de Pagamento
+                </f:facet>
+                <p:outputLabel for="escolhabusca" value="Buscar por data? "/>
+                <p:selectBooleanCheckbox id="escolhabusca" value="#{pagamentoFaces.buscar}">
+                    <p:ajax event="change" update=":pagform"/>
+                </p:selectBooleanCheckbox>
+                <p:outputLabel for="mes" value="Mes: " rendered="#{pagamentoFaces.buscar eq true}"></p:outputLabel>
+                <p:spinner id="mes" value="#{pagamentoFaces.mes}" max="12" size="3" rendered="#{pagamentoFaces.buscar eq true}">
+                    <p:ajax update=":pagform:dividaid"/>
+                </p:spinner>
+                <p:outputLabel for="ano" value="Ano: " rendered="#{pagamentoFaces.buscar eq true}"></p:outputLabel>
+                <p:inputMask id="ano" mask="9999" value="#{pagamentoFaces.ano}" size="4" rendered="#{pagamentoFaces.buscar eq true}">
+                    <p:ajax update=":pagform:dividaid"/>
+                </p:inputMask>
+                    
                     <p:outputLabel for="datapagamento" value="Data do Pagamento: "/>
                     <p:calendar id="datapagamento" value="#{pagamentoFaces.selectedPagamento.datapagamento}"/>
 
@@ -66,10 +83,17 @@
                         <center>
                             <p:commandButton value="Inserir" action="#{pagamentoFaces.newPay()}" update=":pagform:avisos1" immediate="true"/>    
                             <p:commandButton value="Gravar" action="#{pagamentoFaces.addingPayInNewDisplay()}" update=":pagform:avisos1 :pagform:pnlpag"/>
+                            <br/>
+                              #{sistema.NOMESISTEMA} v#{sistema.VERSION}
                         </center>
                     </f:facet>
-
+                    
                 </p:panelGrid>
+              <!--  <p:autoComplete id="dividassugestion" converter="dividaConverter"
+                                completeMethod="#{dividaFaces.autoCompletePagamento}" 
+                                value="#{pagamentoFaces.selectedPagamento.divida}"
+                                dropdown="true"/> -->
+            </center>
         </h:form>
     </h:body>
 </html>

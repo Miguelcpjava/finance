@@ -9,8 +9,12 @@
     <navigation-rule>
         <from-view-id>/index.xhtml</from-view-id>
         <navigation-case>
-            <from-outcome>case1</from-outcome>
+            <from-outcome>Sucess</from-outcome>
             <to-view-id>/menu/principal.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>NotSucess</from-outcome>
+            <to-view-id>/index.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
     <navigation-rule>

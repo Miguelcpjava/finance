@@ -78,6 +78,17 @@
                 <p:column headerText="ID">
                     #{divida.id}
                 </p:column>
+                <p:column headerText="Empresa">
+                    #{divida.empresa}
+                </p:column>
+                <p:column headerText="Vencimento" sortBy="#{divida.vencimento}">
+                    <h:outputText value="#{divida.vencimento}">
+                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Tipo">
+                    #{divida.tipolancamento}
+                </p:column>
                 <p:column headerText="Descricão">
                     #{divida.descricao}
                 </p:column>
@@ -115,7 +126,14 @@
                         <f:convertDateTime pattern="dd/MM/yy"/>
                     </h:outputText>
 
-
+                    <p:outputLabel for="mes" value="Mes: "></p:outputLabel>
+                <p:spinner id="mes" value="#{pagamentoFaces.mes}" max="12" size="3">
+                    <p:ajax update=":formmain:dividaid"/>
+                </p:spinner>
+                <p:outputLabel for="ano" value="Ano: "></p:outputLabel>
+                <p:inputMask id="ano" mask="9999" value="#{pagamentoFaces.ano}" size="4">
+                    <p:ajax update=":formmain:dividaid"/>
+                </p:inputMask>
                     <p:outputLabel for="despesa" value="Dívida: "/>
                     <p:inputText id="despesa" value="#{dividaFaces.selectedDivida.id}"/>
 
@@ -139,8 +157,11 @@
                         <f:selectItem itemLabel="Tranferência" itemValue="Transferencia"/>
                     </p:selectOneMenu>
 
-                    <p:outputLabel for="dividaid" value="Divida ID:"/>
-                    <p:inputText id="dividaid" value="#{pagamentoFaces.selectedPagamento.divida}"/>
+                     <p:outputLabel for="dividaid" value="Divida ID:"/>
+                    <p:selectOneMenu id="dividaid" value="#{pagamentoFaces.selectedPagamento.divida}" converter="dividaConverter">
+                        <f:selectItem itemLabel="|| - Selecione - || "/>
+                        <f:selectItems value="#{pagamentoFaces.optionList}" var="pag" itemLabel="#{pag.label}" itemValue="#{pag.value}"/>
+                    </p:selectOneMenu>
                                   
                     
                     <f:facet name="footer">

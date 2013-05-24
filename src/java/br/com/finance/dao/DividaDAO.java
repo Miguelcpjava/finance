@@ -47,12 +47,13 @@ public class DividaDAO extends GenericDao implements Serializable {
      public List<Divida> getDividas(){
         return getCleanListOfObjects(Divida.class,"from Divida divida");
     }
+     public List<Divida> getDividasByMonth(int mes, int ano){
+        return getCleanListOfObjects(Divida.class, "from Divida divida where month(divida.datadeinicio)='"+mes+"' and year(divida.datadeinicio)='"+ano+"'");
+     }
     public int getIddivida(int id){
         Query query = HibernateUtil.getSession().createSQLQuery("SELECT iddivida FROM divida where iddivida=:id");
          query.setParameter("id", id);
          return (Integer) query.uniqueResult();
     } 
-    
-     
 
 }

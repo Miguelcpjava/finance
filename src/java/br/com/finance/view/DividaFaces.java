@@ -9,6 +9,7 @@ import br.com.finance.dao.PagamentoDAO;
 import br.com.finance.model.Divida;
 import br.com.finance.model.Pagamento;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -24,8 +25,8 @@ import javax.faces.event.ActionEvent;
  */
 @ManagedBean
 @ViewScoped
-public class DividaFaces implements Serializable{
-    
+public class DividaFaces implements Serializable {
+
     private static final long serialVersionUID = -3748575229618280679L;
     FacesMessage msg;
     private List<Divida> ListOfDividas;
@@ -37,9 +38,11 @@ public class DividaFaces implements Serializable{
     private boolean active = true;
     private boolean act;
     private String opcao;
+    private List<Divida> dividaSelect = new ArrayList<Divida>();
+    List<Divida> sugestoes = new ArrayList<Divida>();
     /**
      * Váriaveis para o jogo de criação das dividas a partir das parcelas
-     */    
+     */
     private String novadescricao;
     private String novaempresa;
     private String novoexercicio;
@@ -50,20 +53,19 @@ public class DividaFaces implements Serializable{
     private Date novovencimento;
     private Date novodatainicio;
     private Calendar cal;
-    
-            
-    
+
     /**
      * Creates a new instance of DividaFaces
      */
     public DividaFaces() {
-        System.out.println("Mudando "+act);
+        System.out.println("Mudando " + act);
     }
-    
-      public void cleanUser(){
-         selectedDivida = null;
-     }
-      public List<Divida> getListofDivida() {
+
+    public void cleanUser() {
+        selectedDivida = null;
+    }
+
+    public List<Divida> getListofDivida() {
         System.out.println("Lista de Dividas: " + ListOfDividas);
         if ((ListOfDividas == null) || ListOfDividas.isEmpty()) {
             ListOfDividas = dividaDAO.getDividas();
@@ -71,40 +73,43 @@ public class DividaFaces implements Serializable{
         }
         return ListOfDividas;
     }
-      /**
-       * Método para auxiliar na geração das dividas quando há mais ou igual a
-       * uma parcela informada.
-       * @param parcela
-       * @return 
-       */
-     public int valorRetornoData(int parcela){
-         int resultado = parcela*30;
-         return resultado;
-     }
-     
-     public boolean resultadoAtivador(){
-         if (selectedDivida.isAtivador() == true){
-             act = true;
-         }else{
-             act = false;
-         }
-         return act;
-     }
-   
-     /**
-      * Neste método é utilizado uma logica a depender das parcelas.
-      * Acontece que quando a parcela é 0 é gerado a dívida e o pagamento, mas
-      * quando a parcela é maior que zero o sistema pode gerar automáticamente 
-      * as parcelas na tabela dívida.
-      * 
-      * Lembrar que quando é receita o campo vencimento não existe bem como 
-      * o campo parcela, além do mais lembrar de fazer uma condição que não grave
-      * as parcelas ou melhor as dívidas pois não trata de pagamento e sim de uma
-      * receita.
-      * @throws Exception 
-      */
-     public void addingDivida() throws Exception {
-         
+
+    /**
+     * Método para auxiliar na geração das dividas quando há mais ou igual a uma
+     * parcela informada.
+     *
+     * @param parcela
+     * @return
+     */
+    public int valorRetornoData(int parcela) {
+        int resultado = parcela * 30;
+        return resultado;
+    }
+
+    public boolean resultadoAtivador() {
+        if (selectedDivida.isAtivador() == true) {
+            act = true;
+        } else {
+            act = false;
+        }
+        return act;
+    }
+
+    /**
+     * Neste método é utilizado uma logica a depender das parcelas. Acontece que
+     * quando a parcela é 0 é gerado a dívida e o pagamento, mas quando a
+     * parcela é maior que zero o sistema pode gerar automáticamente as parcelas
+     * na tabela dívida.
+     *
+     * Lembrar que quando é receita o campo vencimento não existe bem como o
+     * campo parcela, além do mais lembrar de fazer uma condição que não grave
+     * as parcelas ou melhor as dívidas pois não trata de pagamento e sim de uma
+     * receita.
+     *
+     * @throws Exception
+     */
+    public void addingDivida() throws Exception {
+
         try {
             novodatainicio = selectedDivida.getDatadeinicio();
             novadescricao = selectedDivida.getDescricao();
@@ -115,15 +120,15 @@ public class DividaFaces implements Serializable{
             novaparcela = selectedDivida.getParcelas();
             novotipolancamento = selectedDivida.getTipolancamento();
             novovencimento = selectedDivida.getVencimento();
-            System.out.println("NOVO DADO DE DATA: "+novodatainicio);
+            System.out.println("NOVO DADO DE DATA: " + novodatainicio);
             selectPagamento.setDivida(selectedDivida);
             dividaDAO.addDivida(selectedDivida);
-            if(selectedDivida.getParcelas() == 0){
+            if (selectedDivida.getParcelas() == 0) {
                 pagDao.addPagamento(selectPagamento);
             }
-            if(selectedDivida.getParcelas()>0){
-                for(int i = 1;i<=selectedDivida.getParcelas();i++){
-                  //calculando nova data de inicio
+            if (selectedDivida.getParcelas() > 0) {
+                for (int i = 1; i <= selectedDivida.getParcelas(); i++) {
+                    //calculando nova data de inicio
                     selectedDivida = new Divida();
                     Calendar cal = Calendar.getInstance();
                     cal.setTime(novodatainicio);
@@ -140,7 +145,7 @@ public class DividaFaces implements Serializable{
                     //calculando novo vencimento
                     //------INICIO---------
                     cal.setTime(novovencimento);
-                    cal.add(Calendar.DATE,valorRetornoData(i));
+                    cal.add(Calendar.DATE, valorRetornoData(i));
                     novovencimento = cal.getTime();
                     //-------FIM-----------
                     selectedDivida.setVencimento(novovencimento);
@@ -161,11 +166,12 @@ public class DividaFaces implements Serializable{
 
         }
     }
-         public void addingPay() throws Exception {
+
+    public void addingPay() throws Exception {
 
         try {
-            System.out.println("Opção "+opcao+"!");
-             System.out.println("PAGAMENTO "+selectPagamento.toString());
+            System.out.println("Opção " + opcao + "!");
+            System.out.println("PAGAMENTO " + selectPagamento.toString());
             selectPagamento.setDatapagamento(selectPagamento.getDatapagamento());
             selectPagamento.setFormapagamento(selectPagamento.getFormapagamento());
             selectPagamento.setValor(selectPagamento.getValor());
@@ -173,7 +179,7 @@ public class DividaFaces implements Serializable{
             pagDao.addPagamento(selectPagamento);
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Dados gravados com sucesso!", null);
             FacesContext.getCurrentInstance().addMessage("add", msg);
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             e.getMessage();
@@ -181,12 +187,12 @@ public class DividaFaces implements Serializable{
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Dados não foi inserido com sucesso!", null);
             FacesContext.getCurrentInstance().addMessage("add", msg);
         }
-         }
-         
-         public void updateDivida() throws Exception {
+    }
+
+    public void updateDivida() throws Exception {
         try {
             dividaDAO.addDivida(selectedDivida);
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,"Dados atualizados com sucesso!", ""));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Dados atualizados com sucesso!", ""));
         } catch (Exception e) {
             e.printStackTrace();
             e.getMessage();
@@ -194,8 +200,8 @@ public class DividaFaces implements Serializable{
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }
     }
-     
-     public void deleteDivida() throws Exception {
+
+    public void deleteDivida() throws Exception {
         try {
             dividaDAO.removeDivida(selectedDivida);
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Dados foi deletado com sucesso!", null);
@@ -206,36 +212,54 @@ public class DividaFaces implements Serializable{
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Dados não foi deletados com sucesso!", null);
             FacesContext.getCurrentInstance().addMessage("add", msg);
         }
-    } 
-     
-    public void fornecedordeID(){ 
-        System.out.println("ID É: "+selectedDivida.getId());
+    }
+
+    public void fornecedordeID() {
+        System.out.println("ID É: " + selectedDivida.getId());
         dividaID = selectedDivida.getId();
-        
-        try{
-            System.out.println("DIVIDAID É: "+dividaID);
+
+        try {
+            System.out.println("DIVIDAID É: " + dividaID);
             selectPagamento = pagDao.getPagamentodaDivida(dividaID);
-        
-        }catch (Exception e){
+
+        } catch (Exception e) {
             e.getMessage();
-            msg = new FacesMessage(FacesMessage.SEVERITY_INFO,"O ID foi retornado "+selectPagamento.getId()+ " e não existe este ID no banco",null);
-           FacesContext.getCurrentInstance().addMessage("add", msg);
+            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "O ID foi retornado " + selectPagamento.getId() + " e não existe este ID no banco", null);
+            FacesContext.getCurrentInstance().addMessage("add", msg);
         }
-            
+
     }
-    
-    public void gerarSimParcelas(ActionEvent actionEvent){ 
+
+    public List<Divida> getAutoCompletePagamento() {
+        dividaSelect = dividaDAO.getDividas();
+        for (Divida d : dividaSelect) {
+            sugestoes.add(d);
+        }
+        return sugestoes;
+    }
+
+    public List<Divida> getCompletemetodo() {
+        dividaSelect = dividaDAO.getDividas();
+        for (Divida d : dividaSelect) {
+            sugestoes.add(d);
+        }
+        return sugestoes;
+    }
+
+    public void gerarSimParcelas(ActionEvent actionEvent) {
         opcao = "Sim";
-        System.out.println("Opção "+opcao+"!");
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Confirmando a operação!",  "Adicionado as parcelas no banco de dados.");  
-        FacesContext.getCurrentInstance().addMessage(null, message); 
+        System.out.println("Opção " + opcao + "!");
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Confirmando a operação!", "Adicionado as parcelas no banco de dados.");
+        FacesContext.getCurrentInstance().addMessage(null, message);
     }
-    public void gerarNaoParcelas(ActionEvent actionEvent){ 
+
+    public void gerarNaoParcelas(ActionEvent actionEvent) {
         opcao = "Nao";
-        System.out.println("Opção "+opcao+"!");
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Operação Recusada!",  "Possívelmente exista apenas uma parcela.");  
-        FacesContext.getCurrentInstance().addMessage(null, message); 
+        System.out.println("Opção " + opcao + "!");
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Operação Recusada!", "Possívelmente exista apenas uma parcela.");
+        FacesContext.getCurrentInstance().addMessage(null, message);
     }
+
     public FacesMessage getMsg() {
         return msg;
     }
@@ -399,7 +423,20 @@ public class DividaFaces implements Serializable{
     public static long getSerialVersionUID() {
         return serialVersionUID;
     }
-    
-    
-    
+
+    public List<Divida> getDividaSelect() {
+        return dividaSelect;
+    }
+
+    public void setDividaSelect(List<Divida> dividaSelect) {
+        this.dividaSelect = dividaSelect;
+    }
+
+    public List<Divida> getSugestoes() {
+        return sugestoes;
+    }
+
+    public void setSugestoes(List<Divida> sugestoes) {
+        this.sugestoes = sugestoes;
+    }
 }

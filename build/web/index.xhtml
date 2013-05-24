@@ -15,11 +15,11 @@
             <p:panel  header="Bem vindo ao Financé || Versão #{sistema.VERSION}"  toggleTitle="Login" >
                 <h:panelGrid columns="2">
                     <p:outputLabel for="loginuser" value="Login: "/>
-                    <p:inputText id="loginuser" required="true" requiredMessage="Campo login não pode está vazio"/>
+                    <p:inputText id="loginuser" required="true" requiredMessage="Campo login não pode está vazio" value="#{usuarioFaces.selectedUsuarios.login}"/>
                     <p:outputLabel for="passuser" value="Senha: "/>
-                    <p:password id="passuser" required="true" requiredMessage="Campo senha não pode está vazio"/>
+                    <p:password id="passuser" required="true" requiredMessage="Campo senha não pode está vazio" value="#{usuarioFaces.selectedUsuarios.password}"/>
                     <h:outputText/>
-                    <p:commandButton value="Entrar" action="#"/>
+                    <p:commandButton value="Entrar" action="#{usuarioFaces.loginConnection()}"/>
                 </h:panelGrid>   
              </p:panel>
             

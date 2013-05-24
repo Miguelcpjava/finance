@@ -26,12 +26,16 @@ import javax.faces.model.SelectItem;
 public class PagamentoFaces implements Serializable{
 
     FacesMessage msg;
+    private int ano;
+    private int mes;
+    private boolean buscar;
     private List<Pagamento> ListOfPagamento;
     private PagamentoDAO pagDAO = new PagamentoDAO();
     private Pagamento selectedPagamento = new Pagamento();
     DividaFaces df = new DividaFaces();
     Divida divi = new Divida();
     private int pagamentoID;
+   
     
     public PagamentoFaces() {
     }
@@ -39,16 +43,24 @@ public class PagamentoFaces implements Serializable{
       public void cleanPay(){
          selectedPagamento = null;
      }
-      
+     /**
+      * 
+      * @return Lembrar de colocar uma opção de escolher por ano e mes ou tudo;
+      */ 
      public List<SelectItem> getOptionList(){
          List<Divida> ListOptionDivida = null;
           List<SelectItem> toDataReturn = new LinkedList<SelectItem>();
           DividaDAO divDAO = new DividaDAO();
           try{
-              ListOptionDivida = divDAO.getDividas();
+              if(buscar){
+                  System.out.println("Escolha da Busca "+ isBuscar());
+              ListOptionDivida = divDAO.getDividasByMonth(mes, ano);
+              }else{
+                  ListOptionDivida = divDAO.getDividas();
+              }
               for (Divida dvd: ListOptionDivida){
                   //dvd.getId(), dvd.getId()+' - '+dvd.getEmpresa()
-                  toDataReturn.add(new SelectItem(dvd,dvd.getEmpresa()));
+                  toDataReturn.add(new SelectItem(dvd,dvd.getId()+" - "+dvd.getEmpresa()));
               }
           }catch (Exception e){
               e.printStackTrace();
@@ -131,6 +143,7 @@ public class PagamentoFaces implements Serializable{
         }
         return ListOfPagamento;
     }
+       
    /*    public int idDividia(){
            df.fornecedordeID();
        }*/
@@ -174,6 +187,48 @@ public class PagamentoFaces implements Serializable{
         this.pagamentoID = pagamentoID;
     }
     private static final long serialVersionUID = -8373616954008406359L;
+
+    public int getAno() {
+        return ano;
+    }
+
+    public void setAno(int ano) {
+        this.ano = ano;
+    }
+
+    public int getMes() {
+        return mes;
+    }
+
+    public void setMes(int mes) {
+        this.mes = mes;
+    }
+
+    
+
+    public DividaFaces getDf() {
+        return df;
+    }
+
+    public void setDf(DividaFaces df) {
+        this.df = df;
+    }
+
+    public Divida getDivi() {
+        return divi;
+    }
+
+    public void setDivi(Divida divi) {
+        this.divi = divi;
+    }
+
+    public boolean isBuscar() {
+        return buscar;
+    }
+
+    public void setBuscar(boolean buscar) {
+        this.buscar = buscar;
+    }
        
        
 }
