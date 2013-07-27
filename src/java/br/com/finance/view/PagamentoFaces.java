@@ -43,10 +43,7 @@ public class PagamentoFaces implements Serializable{
       public void cleanPay(){
          selectedPagamento = null;
      }
-     /**
-      * 
-      * @return Lembrar de colocar uma opção de escolher por ano e mes ou tudo;
-      */ 
+    
      public List<SelectItem> getOptionList(){
          List<Divida> ListOptionDivida = null;
           List<SelectItem> toDataReturn = new LinkedList<SelectItem>();

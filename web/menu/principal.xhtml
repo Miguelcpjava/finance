@@ -16,6 +16,9 @@
                 background-color:  #CE8B3A;
                 
             }
+            .a{
+                text-decoration: none;
+            }
         </style>
         <script>
             function mascara(o, f) {
@@ -60,9 +63,12 @@
                 <p:submenu label="Administração">
                     <p:submenu label="Panel de Controle">
                         <p:menuitem value="Usuário" outcome="/admin/panelusuario.jsf"/>
+                         <p:menuitem value="Dívidas" outcome="/admin/paneldivida.jsf"/>
                     </p:submenu>
                 </p:submenu>
-                <p:submenu label="Relatórios"></p:submenu>
+                <p:submenu label="Relatórios">
+                    <p:menuitem value="Modelos" onclick="relatorio.show()"/>
+                </p:submenu>
                 <p:submenu label="Ajuda">
                     <p:menuitem value="Sobre" outcome="/sobre.jsf"/>
                 </p:submenu>
@@ -96,83 +102,51 @@
                     Financé v#{sistema.VERSION}
                 </f:facet>
             </p:dataTable>
-            <p:dialog id="telapagamento" widgetVar="pagetela" header="Coloque os dados de pagamento">
-                <p:dataTable id="tablepagamento" value="#{pagamentoFaces.listofPagamentos}" var="pagamento" selection="#{pagamentoFaces.selectedPagamento}"
-                             emptyMessage="Não existe pagamento cadastrado" rowKey="#{pagamento.id}" selectionMode="single">
-                    <p:ajax event="rowSelect" update=":formmain:pnlpag"/>
-                    <p:column headerText="ID">
-                         #{pagamento.id}
-                    </p:column>
-                    <p:column headerText="Forma de Pagamento">
-                         #{pagamento.formapagamento}
-                    </p:column>
-                    <p:column headerText="Data de Pagamento">
-                         #{pagamento.datapagamento}
-                    </p:column>
-                    <p:column headerText="Valor">
-                         #{pagamento.valor}
-                    </p:column>
-                    <p:column headerText="Dívida">
-                         #{pagamento.divida}
-                    </p:column>
-                    <f:facet name="footer">
-                        Panel de Pagamentos
-                    </f:facet>
-                </p:dataTable>
-                <p:separator/>
-                <p:panelGrid columns="2" id="pnlpag">
-                    <p:outputLabel for="venc" value="Vencimento: "/>
-                    <h:outputText id="venc" value="#{dividaFaces.selectedDivida.vencimento}">
-                        <f:convertDateTime pattern="dd/MM/yy"/>
-                    </h:outputText>
-
-                    <p:outputLabel for="mes" value="Mes: "></p:outputLabel>
-                <p:spinner id="mes" value="#{pagamentoFaces.mes}" max="12" size="3">
-                    <p:ajax update=":formmain:dividaid"/>
-                </p:spinner>
-                <p:outputLabel for="ano" value="Ano: "></p:outputLabel>
-                <p:inputMask id="ano" mask="9999" value="#{pagamentoFaces.ano}" size="4">
-                    <p:ajax update=":formmain:dividaid"/>
-                </p:inputMask>
-                    <p:outputLabel for="despesa" value="Dívida: "/>
-                    <p:inputText id="despesa" value="#{dividaFaces.selectedDivida.id}"/>
-
-                    <p:outputLabel for="pagamentoID" value="Pagamento: "/>
-                    <p:inputText id="pagamentoID" value="#{pagamentoFaces.selectedPagamento.id}"/>
-
-                    <p:outputLabel for="datapagamento" value="Data do Pagamento: "/>
-                    <p:calendar id="datapagamento" value="#{pagamentoFaces.selectedPagamento.datapagamento}"/>
-
-                    <p:outputLabel for="valorpagamento" value="Valor do pagamento: "/>
-                    <p:inputText id="valorpagamento" onkeypress="mascara(this, valor);" value="#{pagamentoFaces.selectedPagamento.valor}"/>
-
-
-                    <p:outputLabel for="pgto" value="Forma de Pagamento:"/>
-                    <p:selectOneMenu id="pgto" value="#{pagamentoFaces.selectedPagamento.formapagamento}">
-                        <f:selectItem itemLabel="|| - Selecione - || "/>
-                        <f:selectItem itemLabel="Cartão" itemValue="Cartao"/>
-                        <f:selectItem itemLabel="Boleto" itemValue="Boleto"/>
-                        <f:selectItem itemLabel="Espécie" itemValue="Especie"/>
-                        <f:selectItem itemLabel="Cheque" itemValue="Cheque"/>
-                        <f:selectItem itemLabel="Tranferência" itemValue="Transferencia"/>
-                    </p:selectOneMenu>
-
-                     <p:outputLabel for="dividaid" value="Divida ID:"/>
-                    <p:selectOneMenu id="dividaid" value="#{pagamentoFaces.selectedPagamento.divida}" converter="dividaConverter">
-                        <f:selectItem itemLabel="|| - Selecione - || "/>
-                        <f:selectItems value="#{pagamentoFaces.optionList}" var="pag" itemLabel="#{pag.label}" itemValue="#{pag.value}"/>
-                    </p:selectOneMenu>
-                                  
-                    
-                    <f:facet name="footer">
-                        <center>
-                            <p:commandButton value="Inserir" action="#{pagamentoFaces.newPay()}" update=":formmain:avisos" immediate="true"/>    
-                            <p:commandButton value="Gravar" action="#{pagamentoFaces.addingPay()}" update=":formmain:avisos :formmain:telapagamento"/>
-                        </center>
-                    </f:facet>
-
+            <p:dialog id="telapagamento" widgetVar="pagetela" header="Panel do Cadastro da Divida">
+                <p:panelGrid columns="2">
+                      <p:outputLabel for="tipolanc" value="Tipo Lançamento: "/>
+            <p:selectOneMenu id="tipolanc" value="#{dividaFaces.selectedDivida.tipolancamento}">
+                <f:selectItem itemLabel="|| - Selecione - || "/>
+                <f:selectItem itemLabel="Receita" itemValue="R"/>
+                <f:selectItem itemLabel="Despesa" itemValue="D"/>
+            </p:selectOneMenu>
+                      <p:outputLabel for="parcelas" value="Parcelas: "/>
+                       <p:spinner id="parcelas" value="#{dividaFaces.selectedDivida.parcelas}" size="4" title="0 é igual a compra a vista!"/>
+                       <p:outputLabel for="valortotal" value="Valor: "/>
+            <p:inputText id="valortotal" required="true" value="#{dividaFaces.selectedDivida.valortotal}">
+                       <f:convertNumber pattern="#,##0.00" minFractionDigits="2"  />  
+            </p:inputText>
+                      <p:outputLabel for="pago" value="Pago? "/>
+                      <h:outputText id="pago" value="#{dividaFaces.statuspagamento}"/>
                 </p:panelGrid>
 
+            </p:dialog>
+            
+            <p:dialog id="impressRel" widgetVar="relatorio" header="Relatórios" closable="true" showEffect="fade">
+                <p:panelGrid columns="2">
+                <p:outputLabel for="choiserel" value="Modelo de Relatório: "/>
+                <p:selectOneMenu id="choiserel" value="#{dividaFaces.nomeRelatorio}">
+                 <f:selectItem itemLabel="|| - Selecione - || "/>
+                 <f:selectItem itemLabel="Contas a Pagar" itemValue="contasapagar"/>
+                 <f:selectItem itemLabel="Contas Pagas" itemValue="contaspagas"/>
+                 <f:selectItem itemLabel="Contas que falta pagar" itemValue="contasquefaltapagar"/>
+                 <p:ajax update=":formmain:testerel"/>
+                </p:selectOneMenu>
+                <p:outputLabel for="mesdorel" value="Mês desejado: "/>
+                <p:spinner  id="mesdorel" value="#{dividaFaces.mesdesejado}" max="12" min="1" size="4">
+                    <p:ajax update=":formmain:teste"/>
+                </p:spinner>
+                
+                <h:outputText id="teste" value="#{dividaFaces.mesdesejado}"/>
+                <h:outputText id="testerel" value="#{dividaFaces.nomeRelatorio}"/>
+                <f:facet name="footer">
+                    <center>
+                        <h:commandLink id="gerarel" styleClass="a" value="Gerar!" action="#{dividaFaces.printReport}" immediate="true" target="_blank"/>
+                    </center>
+                </f:facet>
+                </p:panelGrid>
+                
+                
             </p:dialog>
         </h:form>
         

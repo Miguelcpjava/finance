@@ -47,6 +47,12 @@ public class DividaDAO extends GenericDao implements Serializable {
      public List<Divida> getDividas(){
         return getCleanListOfObjects(Divida.class,"from Divida divida");
     }
+    // public List<Divida> getDividasNotPay(){
+        /*
+         * SELECT *
+            FROM  finance.divida d where d.iddivida NOT IN(SELECT p.iddivida from finance.pagamento p where status='Pago' );
+         */
+   // }
      public List<Divida> getDividasByMonth(int mes, int ano){
         return getCleanListOfObjects(Divida.class, "from Divida divida where month(divida.datadeinicio)='"+mes+"' and year(divida.datadeinicio)='"+ano+"'");
      }
@@ -54,6 +60,23 @@ public class DividaDAO extends GenericDao implements Serializable {
         Query query = HibernateUtil.getSession().createSQLQuery("SELECT iddivida FROM divida where iddivida=:id");
          query.setParameter("id", id);
          return (Integer) query.uniqueResult();
-    } 
+    }
+    public String getDividaPaga(int id){
+        Query query = HibernateUtil.getSession().createSQLQuery("SELECT pag.status FROM divida di inner join pagamento pag on (di.iddivida = pag.iddivida) where di.iddivida =:id and pag.status = 'Pago'");
+        query.setParameter("id", id);
+        if (query.uniqueResult() == null){
+            return "Não Pago";
+        }else
+            return "Pago";
+    }
+    public List<Divida> getDividasPagas(int mes){
+        Query qr = HibernateUtil.getSession().createSQLQuery("SELECT D.EMPRESA as empresa,P.DATAPAGAMENTO as datapagamento,P.VALORPAGAMENTO as valor FROM DIVIDA D INNER JOIN PAGAMENTO P ON(D.IDDIVIDA = P.IDDIVIDA) WHERE MONTH(DATADEINICIO) =:mes AND P.status = 'Pago'");
+        qr.setParameter("mes", mes);
+        return qr.list();
+    }
+    
+    public List<Divida> getDividasToRel(int mes){
+        return getCleanListOfObjects(Divida.class, "from Divida divida where month(divida.datadeinicio)='"+mes+"'");
+    }
 
 }

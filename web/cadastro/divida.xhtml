@@ -16,6 +16,13 @@
                 <f:facet name="header">
                     Cadastro de Dívida
                 </f:facet>
+                    <p:outputLabel for="tipolanc" value="Tipo Lançamento: "/>
+            <p:selectOneMenu id="tipolanc" value="#{dividaFaces.selectedDivida.tipolancamento}">
+                <f:selectItem itemLabel="|| - Selecione - || "/>
+                <f:selectItem itemLabel="Receita" itemValue="R"/>
+                <f:selectItem itemLabel="Despesa" itemValue="D"/>
+                <p:ajax event="change" update=":formdivida" process="@this"/>
+            </p:selectOneMenu> 
             <p:outputLabel for="divida" value="Descricao da divida: "/>
             <p:inputText id="divida" size="90" value="#{dividaFaces.selectedDivida.descricao}">
             </p:inputText>
@@ -23,16 +30,16 @@
             <p:calendar id="datainicio" locale="pt" showButtonPanel="true" navigator="true" value="#{dividaFaces.selectedDivida.datadeinicio}" required="true" requiredMessage="Este campo não pode ficar com valor nulo.">
                 <p:ajax event="dateSelect" update=":formdivida:vencimento"/>
             </p:calendar>
-            <p:outputLabel for="tipolanc" value="Tipo Lançamento: "/>
-            <p:selectOneMenu id="tipolanc" value="#{dividaFaces.selectedDivida.tipolancamento}">
-                <f:selectItem itemLabel="|| - Selecione - || "/>
-                <f:selectItem itemLabel="Receita" itemValue="R"/>
-                <f:selectItem itemLabel="Despesa" itemValue="D"/>
-                <p:ajax event="change" update=":formdivida" process="@this"/>
-            </p:selectOneMenu> 
+            
+            <p:outputLabel for="valortotal" value="Valor: "/>
+            <p:inputText id="valortotal" required="true" value="#{dividaFaces.selectedDivida.valortotal}">
+                       <f:convertNumber pattern="#,##0.00" minFractionDigits="2"  />  
+            </p:inputText>
             <p:outputLabel for="parcelas" value="Parcelas: "/>
-            <p:spinner id="parcelas" value="#{dividaFaces.selectedDivida.parcelas}" size="4" />
-            <p:outputLabel for="operacao" value="Operação: " rendered="#{dividaFaces.selectedDivida.tipolancamento eq 'D'}"/>
+            <p:spinner id="parcelas" value="#{dividaFaces.selectedDivida.parcelas}" size="4" title="0 é igual a compra a vista!"/>
+            <p:outputLabel id="lbchoisethismonth" value="Aplicar neste mês?" for="thismonth" title="Marque está opção caso queira que a divida seja aplicada no mês da data de inicio." rendered="#{dividaFaces.selectedDivida.tipolancamento eq 'D'}"/>
+            <p:selectBooleanCheckbox id="thismonth" value="#{dividaFaces.dividanestemes}" rendered="#{dividaFaces.selectedDivida.tipolancamento eq 'D'}"/>
+            <p:outputLabel for="operacao" value="Operação: " rendered="#{dividaFaces.selectedDivida.tipolancamento eq 'D'}" />
             <p:selectOneMenu id="operacao" value="#{dividaFaces.selectedDivida.operacao}" rendered="#{dividaFaces.selectedDivida.tipolancamento eq 'D'}">
                 <f:selectItem itemLabel="|| - Selecione - || "/>
                 <f:selectItem itemLabel="Pagamento" itemValue="Pagamento"/>

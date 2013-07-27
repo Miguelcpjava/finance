@@ -27,6 +27,7 @@ import javax.persistence.Transient;
 @Entity
 @Table(name="divida")
 public class Divida implements Serializable{
+    private static final long serialVersionUID = -5021614988145432451L;
 
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,8 +56,15 @@ public class Divida implements Serializable{
    private String exercicio;
    @Column(name="observacao")
    private String observacao;
+   @Column(name="valorpagamentodiv", nullable = true)
+   private double valortotal;
    @Transient
    private boolean ativador;
+   @Column(name="nivel")
+   private String nivel;
+   @Transient
+   private String nome_mes;
+   
    /**
     * Uma divida pode ter vários pagamentos e um ou mais de um pagamento 
     * pertence a  uma divida.
@@ -170,21 +178,47 @@ public class Divida implements Serializable{
     public void setAtivador(boolean ativador) {
         this.ativador = ativador;
     }
+
+    public double getValortotal() {
+        return valortotal;
+    }
+
+    public void setValortotal(double valortotal) {
+        this.valortotal = valortotal;
+    }
+
+    public String getNivel() {
+        return nivel;
+    }
+
+    public void setNivel(String nivel) {
+        this.nivel = nivel;
+    }
+
+    public String getNome_mes() {
+        return nome_mes;
+    }
+
+    public void setNome_mes(String nome_mes) {
+        this.nome_mes = nome_mes;
+    }
     
-     
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 67 * hash + (this.id != null ? this.id.hashCode() : 0);
-        hash = 67 * hash + (this.descricao != null ? this.descricao.hashCode() : 0);
-        hash = 67 * hash + (this.datadeinicio != null ? this.datadeinicio.hashCode() : 0);
-        hash = 67 * hash + this.parcelas;
-        hash = 67 * hash + (this.operacao != null ? this.operacao.hashCode() : 0);
-        hash = 67 * hash + (this.tipolancamento != null ? this.tipolancamento.hashCode() : 0);
-        hash = 67 * hash + (this.empresa != null ? this.empresa.hashCode() : 0);
-        hash = 67 * hash + (this.vencimento != null ? this.vencimento.hashCode() : 0);
-        hash = 67 * hash + (this.exercicio != null ? this.exercicio.hashCode() : 0);
-        hash = 67 * hash + (this.observacao != null ? this.observacao.hashCode() : 0);
+        int hash = 5;
+        hash = 41 * hash + (this.id != null ? this.id.hashCode() : 0);
+        hash = 41 * hash + (this.descricao != null ? this.descricao.hashCode() : 0);
+        hash = 41 * hash + (this.datadeinicio != null ? this.datadeinicio.hashCode() : 0);
+        hash = 41 * hash + this.parcelas;
+        hash = 41 * hash + (this.operacao != null ? this.operacao.hashCode() : 0);
+        hash = 41 * hash + (this.tipolancamento != null ? this.tipolancamento.hashCode() : 0);
+        hash = 41 * hash + (this.empresa != null ? this.empresa.hashCode() : 0);
+        hash = 41 * hash + (this.vencimento != null ? this.vencimento.hashCode() : 0);
+        hash = 41 * hash + (this.exercicio != null ? this.exercicio.hashCode() : 0);
+        hash = 41 * hash + (this.observacao != null ? this.observacao.hashCode() : 0);
+        hash = 41 * hash + (int) (Double.doubleToLongBits(this.valortotal) ^ (Double.doubleToLongBits(this.valortotal) >>> 32));
+        hash = 41 * hash + (this.ativador ? 1 : 0);
+        hash = 41 * hash + (this.nivel != null ? this.nivel.hashCode() : 0);
         return hash;
     }
 
@@ -227,8 +261,18 @@ public class Divida implements Serializable{
         if ((this.observacao == null) ? (other.observacao != null) : !this.observacao.equals(other.observacao)) {
             return false;
         }
+        if (Double.doubleToLongBits(this.valortotal) != Double.doubleToLongBits(other.valortotal)) {
+            return false;
+        }
+        if (this.ativador != other.ativador) {
+            return false;
+        }
+        if ((this.nivel == null) ? (other.nivel != null) : !this.nivel.equals(other.nivel)) {
+            return false;
+        }
         return true;
     }
+   
     @Override
     public String toString() {
         return  String.valueOf(id);

@@ -7,12 +7,13 @@ package br.com.finance.view;
 import br.com.finance.dao.UsuarioDAO;
 import br.com.finance.model.Usuario;
 import br.com.finance.util.Criptografia;
+import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 
 /**
@@ -20,13 +21,19 @@ import javax.faces.context.FacesContext;
  * @author Miguel
  */
 @ManagedBean
-@RequestScoped
-public class UsuarioFaces {
+@ViewScoped
+public class UsuarioFaces implements Serializable{
+    private static final long serialVersionUID = -2099476085016810021L;
+    
+    /**
+     * Lembrar de fazer uma função de cadastrar quem está realizando a ação;
+     */
 
     FacesMessage msg;
     private List<Usuario> ListOfUsers;
     private UsuarioDAO userDAO = new UsuarioDAO();
     private Usuario selectedUsuarios = new Usuario();
+    private Usuario compareuser;
     private int UsuarioID;
     private boolean active = true;
     Criptografia cripto = new Criptografia();
@@ -89,18 +96,33 @@ public class UsuarioFaces {
             FacesContext.getCurrentInstance().addMessage("add", msg);
         }
     } 
-     public String loginConnection(){
+     
+     public void descubrir() throws Throwable { 
+         String pass;
+         pass = userDAO.senha(selectedUsuarios.getLogin());
+         System.out.println("Senha limpa "+pass);
+        
+     }
+     public String loginConnection() throws Throwable{
          String criptografadoPass = null;
          String conecta = null;
-        try {
-            criptografadoPass = cripto.encriptar(cripto.CHAVE, selectedUsuarios.getPassword());
-        } catch (Throwable ex) {
-            Logger.getLogger(UsuarioFaces.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try{
-         conecta = userDAO.validarLoginUser(selectedUsuarios.getLogin(), criptografadoPass);
+         String descriptoDigitado = null;
+         try{
+         compareuser = userDAO.validarLoginUser(selectedUsuarios.getLogin(), selectedUsuarios.getPassword());
+         criptografadoPass = cripto.decriptar(cripto.CHAVE, compareuser.getPassword());
+         descriptoDigitado = cripto.decriptar(cripto.CHAVE, selectedUsuarios.getPassword());
+            System.out.println("Senha "+criptografadoPass);
+            System.out.println("Senha Digitada "+selectedUsuarios.getPassword());
+            if(compareuser.getLogin().equals(selectedUsuarios.getLogin()) && criptografadoPass.equals(descriptoDigitado) ){
+                conecta = "Sucess";
+            }else{
+                conecta = "NotSucess";
+            System.out.println("Login Usuário Não Aceito!");
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,"Usuário ou senha inválido", "Favor digitar login ou senha válida.");
+            FacesContext.getCurrentInstance().addMessage("add", msg);
+            }
         }catch (Exception e){
-            e.getLocalizedMessage();
+            e.getMessage();
         }
         return conecta;
      }

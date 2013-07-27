@@ -121,7 +121,6 @@ public class Usuario implements Serializable {
     public int idadeUser() throws ParseException{
         
         DataCompare dt = new DataCompare();
-        
         String datacomparada = new SimpleDateFormat("dd/MM/yyyy").format(getDatanascimento());
         //dt.compareWithTwoDatesString(datacomparada,Datas.dataAtual ,"dd/MM/yyyy" );
         double valor = dt.compareWithTwoDatesString(Datas.dataAtual,datacomparada ,"dd/MM/yyyy" )/365;

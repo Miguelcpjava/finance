@@ -24,6 +24,7 @@ import javax.persistence.Temporal;
 @Entity
 @Table(name="pagamento")
 public class Pagamento implements Serializable {
+    private static final long serialVersionUID = 8582239242058407438L;
 
    @Id 
    @GeneratedValue(strategy = GenerationType.IDENTITY)
