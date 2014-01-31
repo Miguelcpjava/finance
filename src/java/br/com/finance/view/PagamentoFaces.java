@@ -35,6 +35,7 @@ public class PagamentoFaces implements Serializable{
     DividaFaces df = new DividaFaces();
     Divida divi = new Divida();
     private int pagamentoID;
+    private double valorDeGasto;
    
     
     public PagamentoFaces() {
@@ -51,7 +52,7 @@ public class PagamentoFaces implements Serializable{
           try{
               if(buscar){
                   System.out.println("Escolha da Busca "+ isBuscar());
-              ListOptionDivida = divDAO.getDividasByMonth(mes, ano);
+                  ListOptionDivida = divDAO.getDividasByMonth(mes, ano);
               }else{
                   ListOptionDivida = divDAO.getDividas();
               }
@@ -69,7 +70,7 @@ public class PagamentoFaces implements Serializable{
       
       public void newPay(){
           selectedPagamento = new Pagamento();
-           msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Já pode inserir novos dados", null);
+          msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Já pode adicionar um novo Pagamento!", null);
             FacesContext.getCurrentInstance().addMessage("add", msg);
       }
       
@@ -80,6 +81,8 @@ public class PagamentoFaces implements Serializable{
             pagDAO.addPagamentov2(selectedPagamento);
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Dados gravados com sucesso!", null);
             FacesContext.getCurrentInstance().addMessage("add", msg);
+            cleanPay();
+            newPay();
             ListOfPagamento = null;
         } catch (Exception e) {
             e.printStackTrace();
@@ -140,7 +143,15 @@ public class PagamentoFaces implements Serializable{
         }
         return ListOfPagamento;
     }
-       
+       public double getValordeGastoNoPeriodo(){
+           valorDeGasto = 0.0;
+           try{
+               valorDeGasto = pagDAO.verificaoDeGasto(mes, ano);
+           }catch (Exception e){
+               e.printStackTrace();
+           }
+           return valorDeGasto;
+       }
    /*    public int idDividia(){
            df.fornecedordeID();
        }*/
@@ -201,7 +212,13 @@ public class PagamentoFaces implements Serializable{
         this.mes = mes;
     }
 
-    
+    public double getValorDeGasto() {
+        return valorDeGasto;
+    }
+
+    public void setValorDeGasto(double valorDeGasto) {
+        this.valorDeGasto = valorDeGasto;
+    }
 
     public DividaFaces getDf() {
         return df;

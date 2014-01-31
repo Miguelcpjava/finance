@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Informações sobre Finance v#{sistema.VERSION}</title>
+    </h:head>
+    <h:body style="background-color: #CE8B3A">
+        <h:form id="pnldividaform">
+            <p:messages id="msguser" autoUpdate="true" closable="true"/>
+              <h:link outcome="/menu/principal.jsf" value="Voltar" style="font-weight: bold; color: white;"/>
+              <p:dataTable value="#{dividaFaces.listofDivida}" var="dividas" rowKey="#{dividas.id}" selectionMode="single" emptyMessage="Não existe dividas cadastradas!"
+                            paginator="true" id="datauser" selection="#{dividaFaces.selectedDivida}" >
+                 <p:ajax event="rowSelect" update=":pnldividaform:displaycaddivida" oncomplete="caddivida.show()"/>
+                 <f:facet name="header">
+                     Panel de Controle das Dividas
+                 </f:facet>
+                 <p:column headerText="ID">
+                     #{dividas.id}
+                 </p:column>
+              </p:dataTable>
+              <p:dialog id="displaycaddivida" widgetVar="caddivida" header="Detalhes do Cadastro da Divida" showEffect="fade" hideEffect="explode" closable="true"></p:dialog>
+        </h:form>    
+    </h:body>
+</html>
+

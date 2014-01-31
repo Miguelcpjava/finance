@@ -15,11 +15,11 @@ import javax.faces.bean.RequestScoped;
 @RequestScoped
 public class Sistema {
     
-    public String VERSION = "0.5";
+    public String VERSION = "0.8";
     public String NOMESISTEMA = "FINANCÉ";
-    public String VERSION_UPDATE = "7";
-    public String LAST_UPDATE = "11/06/2013";
-    public String DATA_UPDATE = "10/07/2013";
+    public String VERSION_UPDATE = "10";
+    public String LAST_UPDATE = "29/01/2014";
+    public String DATA_UPDATE = "30/01/2014";
     
     public Sistema() {
     }

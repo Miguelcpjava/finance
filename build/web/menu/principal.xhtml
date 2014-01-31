@@ -122,7 +122,53 @@
 
             </p:dialog>
             
+            <h:panelGrid id="pnverify" columns="6">
+                <p:outputLabel for="mesveri" value="Mês: " style="font-weight: bold; color: white; font-size: 22px;"/>
+                <p:selectOneMenu id="mesveri" value="#{pagamentoFaces.mes}">
+                    <f:selectItem itemLabel="|| Selecionar Mês ||" itemValue="" />
+                    <f:selectItem itemLabel="Janeiro"   itemValue="1" />
+                    <f:selectItem itemLabel="Fevereiro" itemValue="2" />
+                    <f:selectItem itemLabel="Março"     itemValue="3" />
+                    <f:selectItem itemLabel="Abril"     itemValue="4" />
+                    <f:selectItem itemLabel="Maio"      itemValue="5" />
+                    <f:selectItem itemLabel="Junho"     itemValue="6" />
+                    <f:selectItem itemLabel="Julho"     itemValue="7" />
+                    <f:selectItem itemLabel="Agosto"    itemValue="8" />
+                    <f:selectItem itemLabel="Setembro"  itemValue="9" />
+                    <f:selectItem itemLabel="Outubro"   itemValue="10" />
+                    <f:selectItem itemLabel="Novembro"  itemValue="11" />
+                    <f:selectItem itemLabel="Dezembro"  itemValue="12" />
+                     <p:ajax update=":formmain:valorgasto"/>
+                </p:selectOneMenu>
+                <p:outputLabel for="anoveri" value="Ano: " style="font-weight: bold; color: white; font-size: 22px;"/>
+                <p:selectOneMenu id="anoveri" value="#{pagamentoFaces.ano}">
+                    <f:selectItem itemLabel="|| Selcione o Ano ||" itemValue="" />
+                    <f:selectItem itemLabel="2010" itemValue="2010" />
+                    <f:selectItem itemLabel="2011" itemValue="2011" />
+                    <f:selectItem itemLabel="2012" itemValue="2012" />
+                    <f:selectItem itemLabel="2013" itemValue="2013" />
+                    <f:selectItem itemLabel="2014" itemValue="2014" />
+                    <f:selectItem itemLabel="2015" itemValue="2015" />
+                    <f:selectItem itemLabel="2016" itemValue="2016" />
+                    <f:selectItem itemLabel="2017" itemValue="2017" />
+                    <f:selectItem itemLabel="2018" itemValue="2018" />
+                    <f:selectItem itemLabel="2019" itemValue="2019" />
+                    <f:selectItem itemLabel="2020" itemValue="2020" />
+                    <f:selectItem itemLabel="2021" itemValue="2021" />
+                    <f:selectItem itemLabel="2022" itemValue="2022" />
+                    <f:selectItem itemLabel="2023" itemValue="2023" />
+                    <f:selectItem itemLabel="2024" itemValue="2024" />
+                    <f:selectItem itemLabel="2025" itemValue="2025" />
+                    <p:ajax event="change" update=":formmain:valorgasto" />
+                </p:selectOneMenu>
+                <p:outputLabel for="valorgasto" value="Valor Gasto: " style="font-weight: bold; color: white; font-size: 22px;"/>
+                <h:outputText id="valorgasto" value="#{pagamentoFaces.valordeGastoNoPeriodo}" style="font-weight: bold; color: white; font-size: 22px;">
+                    <f:convertNumber locale="pt_BR" type="currency"/>
+                </h:outputText>
+            </h:panelGrid>
+            
             <p:dialog id="impressRel" widgetVar="relatorio" header="Relatórios" closable="true" showEffect="fade">
+                <center>
                 <p:panelGrid columns="2">
                 <p:outputLabel for="choiserel" value="Modelo de Relatório: "/>
                 <p:selectOneMenu id="choiserel" value="#{dividaFaces.nomeRelatorio}">
@@ -130,23 +176,25 @@
                  <f:selectItem itemLabel="Contas a Pagar" itemValue="contasapagar"/>
                  <f:selectItem itemLabel="Contas Pagas" itemValue="contaspagas"/>
                  <f:selectItem itemLabel="Contas que falta pagar" itemValue="contasquefaltapagar"/>
-                 <p:ajax update=":formmain:testerel"/>
+                  <p:ajax update=":formmain:relescolhido"/>
                 </p:selectOneMenu>
-                <p:outputLabel for="mesdorel" value="Mês desejado: "/>
+                <p:outputLabel for="mesdorel" value="Mês Desejado: "/>
                 <p:spinner  id="mesdorel" value="#{dividaFaces.mesdesejado}" max="12" min="1" size="4">
-                    <p:ajax update=":formmain:teste"/>
+                    <p:ajax update=":formmain:mes"/>
                 </p:spinner>
-                
-                <h:outputText id="teste" value="#{dividaFaces.mesdesejado}"/>
-                <h:outputText id="testerel" value="#{dividaFaces.nomeRelatorio}"/>
+                 <p:outputLabel for="anodorel" value="Ano Desejado: "/>
+                 <p:spinner id="anodorel" value="#{dividaFaces.anodesejado}" maxlength="4" size="5" min="2000">
+                 <p:ajax update=":formmain:ano"/>
+                 </p:spinner>
+                 
                 <f:facet name="footer">
                     <center>
                         <h:commandLink id="gerarel" styleClass="a" value="Gerar!" action="#{dividaFaces.printReport}" immediate="true" target="_blank"/>
                     </center>
                 </f:facet>
                 </p:panelGrid>
-                
-                
+                    <p align="center">Você está gerando o relatorio <h:outputText id="relescolhido" value="#{dividaFaces.nomeRelatorio}"/>  com o mês escolhido foi <h:outputText id="mes" value="#{dividaFaces.mesdesejado}"/> do ano <h:outputText id="ano" value="#{dividaFaces.anodesejado}"/>.</p>
+                </center>
             </p:dialog>
         </h:form>
         

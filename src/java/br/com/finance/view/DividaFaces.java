@@ -55,6 +55,7 @@ public class DividaFaces implements Serializable {
     DataCompare dt = new DataCompare();
     //Argumentos para os relatórios
     private int mesdesejado;
+    private int anodesejado;
     private String nomeRelatorio;
     /**
      * Váriaveis para o jogo de criação das dividas a partir das parcelas
@@ -79,8 +80,11 @@ public class DividaFaces implements Serializable {
         System.out.println("Mudando " + act);
     }
     
-    public void cleanUser() {
+    public void novaDivida() {
         selectedDivida = null;
+          msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Já pode adicionar uma nova dívida!", null);
+            FacesContext.getCurrentInstance().addMessage("add", msg);
+            selectedDivida = new Divida();
     }
     
     public List<Divida> getListofDivida() {
@@ -246,7 +250,6 @@ public class DividaFaces implements Serializable {
             dividaDAO.removeDivida(selectedDivida);
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Dados foi deletado com sucesso!", null);
             FacesContext.getCurrentInstance().addMessage("add", msg);
-            cleanUser();
         } catch (Exception e) {
             e.printStackTrace();
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Dados não foi deletados com sucesso!", null);
@@ -288,7 +291,8 @@ public class DividaFaces implements Serializable {
     
    public void printReport() throws IOException, JRException, ClassNotFoundException, Exception{
        System.out.println("Mes: "+mesdesejado+ " Modelo: "+nomeRelatorio);
-       reportUtil.imprimirRelatorio(mesdesejado, nomeRelatorio,"mes", "contasapagar");
+       String nomeparagravacao = nomeRelatorio+" "+mesdesejado+"-"+anodesejado;
+       reportUtil.imprimirRelatorio(mesdesejado,anodesejado, nomeRelatorio,"mes",nomeparagravacao );
        
    }
    public String pagamentoFinalizado(){
@@ -549,6 +553,14 @@ public class DividaFaces implements Serializable {
 
     public void setDividanestemes(boolean dividanestemes) {
         this.dividanestemes = dividanestemes;
+    }
+
+    public int getAnodesejado() {
+        return anodesejado;
+    }
+
+    public void setAnodesejado(int anodesejado) {
+        this.anodesejado = anodesejado;
     }
     
 }

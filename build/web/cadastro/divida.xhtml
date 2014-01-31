@@ -58,8 +58,8 @@
             <f:facet name="footer">
                 <center>
                    
-                    <p:commandButton value="Inserir" action="#" />
-                    <p:commandButton value="Salvar" action="#{dividaFaces.addingDivida()}" /> 
+                    <p:commandButton value="Inserir" action="#{dividaFaces.novaDivida()}" update=":formdivida:warn :formdivida:pnldivida"/>
+                    <p:commandButton value="Salvar" action="#{dividaFaces.addingDivida()}" update=":formdivida:warn :formdivida:pnldivida" /> 
                     <br/> 
                     
                 #{sistema.NOMESISTEMA} v#{sistema.VERSION}
