@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Painel do Cadastrao de Cartão de Crédito</title>
+    </h:head>
+     <h:body style="background-color: #CE8B3A">
+        <h:form id="pnlcartaoform">
+            <p:messages id="msguser" autoUpdate="true" closable="true"/>
+             <p:button value="Voltar" outcome="/menu/principal.jsf"/>
+             <p:dataTable value="#{cartaoFaces.listCardByUser}" var="cartao" rowKey="#{cartao.idcartao}" selectionMode="single" emptyMessage="Não existe cartões cadastrados!"
+                           paginator="true" id="datauser" selection="#{cartaoFaces.card}" >
+                 <p:ajax event="rowSelect" update=":pnlcartaoform:displaycadcartao" oncomplete="cadcartao.show()"/>
+                 <f:facet name="header">
+                     Panel de Controle dos Cartões
+                 </f:facet>
+                 <p:column headerText="ID">
+                     <h:outputText value="#{cartao.idcartao}"/>
+                 </p:column>
+                 <p:column headerText="Descricão">
+                     <h:outputText value="#{cartao.descricao}"/>
+                 </p:column>
+              </p:dataTable>
+              <p:dialog id="displaycadcartao" widgetVar="cadcartao" header="Detalhes do Cartão" showEffect="fade" hideEffect="explode" closable="true">
+                  
+                   <p:panelGrid columns="2" id="pnlcartao">
+                  <f:facet name="header">
+                    Cadastro de Cartão de Crédito
+                </f:facet>
+                     <p:outputLabel id="lbnome" value="Nome: " for="nomecartao"/>
+                    <p:inputText id="nomecartao" value="#{cartaoFaces.card.descricao}" required="true" requiredMessage="Digite o nome do cartão"/>
+                    <p:outputLabel id="lbbandeira" value="Bandeira: "/>
+                    <p:row>
+                        <p:commandLink id="bandvisa" action="#{cartaoFaces.bandeiraVisa()}">
+                            <img src="../resources/img/visa-logo-1.png" alt="visa" width="32px" height="32px" title="Visa"/>
+                        </p:commandLink>
+                        <p:commandLink id="bandmastercard" action="#{cartaoFaces.bandeiraMasterCard()}">
+                           <img src="../resources/img/MasterCard-Logo.png" alt="mastercard" width="32px" height="32px" title="MasterCard"/>
+                        </p:commandLink>
+                        <p:commandLink id="banddiners" action="#{cartaoFaces.bandeiraDinersClub()}">
+                           <img src="../resources/img/diners-club.png" alt="diners" width="32px" height="32px" title="Diners Club"/>
+                        </p:commandLink>
+                        
+                        <p:commandLink id="bandamerican" action="#{cartaoFaces.bandeiraAmerican()}">
+                           <img src="../resources/img/150px-American_Express_logo.png" alt="american" width="32px" height="32px" title="American Express"/>
+                        </p:commandLink>
+                        <p:commandLink id="bandelo" action="#{cartaoFaces.bandeiraElo()}">
+                        <img src="../resources/img/Elo_logo.png" alt="elo" width="32px" height="32px" title="Elo" />
+                         </p:commandLink>
+                        <p:commandLink id="bandhiper" action="#{cartaoFaces.bandeiraHiper()}">
+                        <img src="../resources/img/Hipercard-logo-2.png" alt="hipercard" width="32px" height="32px" title="HiperCard" />
+                         </p:commandLink>
+                        <p:commandLink id="bandaura" action="#{cartaoFaces.bandeiraAura()}">
+                        <img src="../resources/img/aura-logo.png" alt="aura" width="32px" height="32px" title="Aura"/>
+                         </p:commandLink>
+                    </p:row>
+                    
+                 
+                    <p:outputLabel id="lbativo" value="Ativo: " for="ativo"/>
+                    <p:selectBooleanCheckbox id="ativo" value="#{cartaoFaces.card.ativo}"/>
+                    
+                     <f:facet name="footer">
+                        <center>
+                            <p:commandButton value="Atualizar" action="#{cartaoFaces.atualizarCartao()}" update="pnlcartaoform"/>    
+                            <p:commandButton value="Remover" action="#{cartaoFaces.removerCartao()}" update="pnlcartaoform"/>
+                            
+                            <br/>
+                              #{sistema.NOMESISTEMA} v#{sistema.VERSION}
+                        </center>
+                    </f:facet>
+                </p:panelGrid>
+                  
+              </p:dialog>
+        </h:form>    
+    </h:body>
+</html>
+

@@ -5,16 +5,16 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core">
     <h:head>
-        <h:outputStylesheet library="css" name="/static/css/bootstrap.css"  />
-        <h:outputScript name="./static/js/bootstrap.js"/>
-        <h:outputScript name="./static/js/bootstrap.min.js"/>
+        <link rel="stylesheet" type="text/css" href="/Financ/resources/css/bootstrap.css" />
+        <link rel="stylesheet" type="text/css" href="/Financ/resources/css/bootstrap-responsive.css" />
+        <!-- <h:outputScript library="js" name="bootstrap.js"/>
+        <h:outputScript library="js" name="bootstrap.min.js"/> -->
         
         <title>Bem vindo ao #{sistema.NOMESISTEMA} #{sistema.VERSION}</title>
         <!--<script language="JavaScript" src="global.js"></script> -->
          <style type="text/css">
             .link:hover{
                 background-color:  #CE8B3A;
-                
             }
             .a{
                 text-decoration: none;
@@ -51,45 +51,96 @@
         <h:form id="formmain">
             <p:menubar id="menuprincipal">
                 <p:submenu label="Cadastro">
-                    <p:menuitem value="Divida" outcome="/cadastro/divida.jsf">
-                    </p:menuitem>
-                   
-                     <p:menuitem value="Usuário" outcome="/cadastro/usuario.jsf" >   
-                    </p:menuitem>
-                    <p:menuitem value="Pagamento" outcome="/cadastro/pagamento.jsf"></p:menuitem>
+                    <p:menuitem value="Cartao de Crédtio" outcome="/cadastro/cartao.jsf" icon="ui-icon-clipboard"/>
+                    <p:menuitem value="Credor" outcome="/cadastro/credores.jsf" icon="ui-icon-person"/>
+                    <p:menuitem value="Divida" outcome="/cadastro/divida.jsf" icon="ui-icon-pin-s"></p:menuitem>
+                    <p:menuitem value="Pagamento" outcome="/cadastro/pagamento.jsf" icon="ui-icon-clipboard"></p:menuitem>
+                    <p:menuitem value="Usuário" outcome="/cadastro/usuario.jsf" icon="ui-icon-person" ></p:menuitem>
                      <p:separator/>
-                     <p:menuitem value="LogOff" outcome="/index.jsf"/>
+                     <p:menuitem value="LogOff" outcome="/index.jsf" icon="ui-icon-power"/>
                 </p:submenu>
                 <p:submenu label="Administração">
                     <p:submenu label="Panel de Controle">
+                        <p:menuitem value="Cartões de Crédito" outcome="/admin/panelcartao.jsf"/>
+                        <p:menuitem value="Credores" outcome="/admin/panelcredor.jsf"/>
+                        <p:menuitem value="Dívidas" outcome="/admin/paneldivida.jsf"/>
                         <p:menuitem value="Usuário" outcome="/admin/panelusuario.jsf"/>
-                         <p:menuitem value="Dívidas" outcome="/admin/paneldivida.jsf"/>
                     </p:submenu>
                 </p:submenu>
                 <p:submenu label="Relatórios">
-                    <p:menuitem value="Modelos" onclick="relatorio.show()"/>
+                    <p:menuitem value="Modelos" onclick="relatorio.show()" icon="ui-icon-clipboard"/>
                 </p:submenu>
                 <p:submenu label="Ajuda">
-                    <p:menuitem value="Sobre" outcome="/sobre.jsf"/>
+                    <p:menuitem value="Sobre" outcome="/sobre.jsf" icon="ui-icon-volume-off"/>
                 </p:submenu>
             </p:menubar>
             
             <p:messages autoUpdate="true" closable="true"  id="avisos"/>
+            <br/>
+             <h:panelGrid id="pnverify" columns="6">
+                <p:outputLabel for="mesveri" value="Mês: " style="font-weight: bold; color: white; font-size: 22px;"/>
+                <p:selectOneMenu id="mesveri" value="#{pagamentoFaces.mes}">
+                    <f:selectItem itemLabel="|| Selecionar Mês ||" itemValue="" />
+                    <f:selectItem itemLabel="Janeiro"   itemValue="1" />
+                    <f:selectItem itemLabel="Fevereiro" itemValue="2" />
+                    <f:selectItem itemLabel="Março"     itemValue="3" />
+                    <f:selectItem itemLabel="Abril"     itemValue="4" />
+                    <f:selectItem itemLabel="Maio"      itemValue="5" />
+                    <f:selectItem itemLabel="Junho"     itemValue="6" />
+                    <f:selectItem itemLabel="Julho"     itemValue="7" />
+                    <f:selectItem itemLabel="Agosto"    itemValue="8" />
+                    <f:selectItem itemLabel="Setembro"  itemValue="9" />
+                    <f:selectItem itemLabel="Outubro"   itemValue="10" />
+                    <f:selectItem itemLabel="Novembro"  itemValue="11" />
+                    <f:selectItem itemLabel="Dezembro"  itemValue="12" />
+                     <p:ajax update=":formmain:valorgasto :formmain:valorrecebido"/>
+                </p:selectOneMenu>
+                <p:outputLabel for="anoveri" value="Ano: " style="font-weight: bold; color: white; font-size: 22px;"/>
+                <p:selectOneMenu id="anoveri" value="#{pagamentoFaces.ano}">
+                    <f:selectItem itemLabel="|| Selcione o Ano ||" itemValue="" />
+                    <f:selectItem itemLabel="2010" itemValue="2010" />
+                    <f:selectItem itemLabel="2011" itemValue="2011" />
+                    <f:selectItem itemLabel="2012" itemValue="2012" />
+                    <f:selectItem itemLabel="2013" itemValue="2013" />
+                    <f:selectItem itemLabel="2014" itemValue="2014" />
+                    <f:selectItem itemLabel="2015" itemValue="2015" />
+                    <f:selectItem itemLabel="2016" itemValue="2016" />
+                    <f:selectItem itemLabel="2017" itemValue="2017" />
+                    <f:selectItem itemLabel="2018" itemValue="2018" />
+                    <f:selectItem itemLabel="2019" itemValue="2019" />
+                    <f:selectItem itemLabel="2020" itemValue="2020" />
+                    <f:selectItem itemLabel="2021" itemValue="2021" />
+                    <f:selectItem itemLabel="2022" itemValue="2022" />
+                    <f:selectItem itemLabel="2023" itemValue="2023" />
+                    <f:selectItem itemLabel="2024" itemValue="2024" />
+                    <f:selectItem itemLabel="2025" itemValue="2025" />
+                    <p:ajax event="change" update=":formmain:valorgasto :formmain:valorrecebido" />
+                </p:selectOneMenu>
+            </h:panelGrid>
+             <br/>
+                <p:outputLabel for="valorgasto" value="Valor Gasto: " style="font-weight: bold; color: white; font-size: 22px;"/>
+                <h:outputText id="valorgasto" value="#{pagamentoFaces.valordeGastoNoPeriodo}" style="font-weight: bold; color: white; font-size: 22px;">
+                    <f:convertNumber locale="pt_BR" type="currency"/>
+                </h:outputText>
+                <p:outputLabel for="valorrecebido" value="Valor Recebido: " style="font-weight: bold; color: white; font-size: 22px;"/>
+                <h:outputText id="valorrecebido" value="#{pagamentoFaces.valorRecebidoNoPeriodo}" style="font-weight: bold; color: white; font-size: 22px;">
+                    <f:convertNumber locale="pt_BR" type="currency"/>
+                </h:outputText>
             <p:dataTable id="paneluser" value="#{dividaFaces.listofDivida}" var="divida" selection="#{dividaFaces.selectedDivida}"
                          emptyMessage="Não existe Dívida" paginator="true" rows="10" rowKey="#{divida.id}" selectionMode="single">
                 <f:facet name="header">
-                    Panel de Dívidas Cadastradas
+                    Panel de Dívidas Cadastradas e Não Pagas
                 </f:facet>
                 <p:ajax oncomplete="pagetela.show()" update=":formmain:telapagamento" event="rowSelect"/>
                 <p:column headerText="ID">
                     #{divida.id}
                 </p:column>
-                <p:column headerText="Empresa">
-                    #{divida.empresa}
+                <p:column headerText="Credor">
+                    #{divida.credor.nomeCredor}
                 </p:column>
                 <p:column headerText="Vencimento" sortBy="#{divida.vencimento}">
                     <h:outputText value="#{divida.vencimento}">
-                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
                     </h:outputText>
                 </p:column>
                 <p:column headerText="Tipo">
@@ -120,53 +171,7 @@
                       <h:outputText id="pago" value="#{dividaFaces.statuspagamento}"/>
                 </p:panelGrid>
 
-            </p:dialog>
-            
-            <h:panelGrid id="pnverify" columns="6">
-                <p:outputLabel for="mesveri" value="Mês: " style="font-weight: bold; color: white; font-size: 22px;"/>
-                <p:selectOneMenu id="mesveri" value="#{pagamentoFaces.mes}">
-                    <f:selectItem itemLabel="|| Selecionar Mês ||" itemValue="" />
-                    <f:selectItem itemLabel="Janeiro"   itemValue="1" />
-                    <f:selectItem itemLabel="Fevereiro" itemValue="2" />
-                    <f:selectItem itemLabel="Março"     itemValue="3" />
-                    <f:selectItem itemLabel="Abril"     itemValue="4" />
-                    <f:selectItem itemLabel="Maio"      itemValue="5" />
-                    <f:selectItem itemLabel="Junho"     itemValue="6" />
-                    <f:selectItem itemLabel="Julho"     itemValue="7" />
-                    <f:selectItem itemLabel="Agosto"    itemValue="8" />
-                    <f:selectItem itemLabel="Setembro"  itemValue="9" />
-                    <f:selectItem itemLabel="Outubro"   itemValue="10" />
-                    <f:selectItem itemLabel="Novembro"  itemValue="11" />
-                    <f:selectItem itemLabel="Dezembro"  itemValue="12" />
-                     <p:ajax update=":formmain:valorgasto"/>
-                </p:selectOneMenu>
-                <p:outputLabel for="anoveri" value="Ano: " style="font-weight: bold; color: white; font-size: 22px;"/>
-                <p:selectOneMenu id="anoveri" value="#{pagamentoFaces.ano}">
-                    <f:selectItem itemLabel="|| Selcione o Ano ||" itemValue="" />
-                    <f:selectItem itemLabel="2010" itemValue="2010" />
-                    <f:selectItem itemLabel="2011" itemValue="2011" />
-                    <f:selectItem itemLabel="2012" itemValue="2012" />
-                    <f:selectItem itemLabel="2013" itemValue="2013" />
-                    <f:selectItem itemLabel="2014" itemValue="2014" />
-                    <f:selectItem itemLabel="2015" itemValue="2015" />
-                    <f:selectItem itemLabel="2016" itemValue="2016" />
-                    <f:selectItem itemLabel="2017" itemValue="2017" />
-                    <f:selectItem itemLabel="2018" itemValue="2018" />
-                    <f:selectItem itemLabel="2019" itemValue="2019" />
-                    <f:selectItem itemLabel="2020" itemValue="2020" />
-                    <f:selectItem itemLabel="2021" itemValue="2021" />
-                    <f:selectItem itemLabel="2022" itemValue="2022" />
-                    <f:selectItem itemLabel="2023" itemValue="2023" />
-                    <f:selectItem itemLabel="2024" itemValue="2024" />
-                    <f:selectItem itemLabel="2025" itemValue="2025" />
-                    <p:ajax event="change" update=":formmain:valorgasto" />
-                </p:selectOneMenu>
-                <p:outputLabel for="valorgasto" value="Valor Gasto: " style="font-weight: bold; color: white; font-size: 22px;"/>
-                <h:outputText id="valorgasto" value="#{pagamentoFaces.valordeGastoNoPeriodo}" style="font-weight: bold; color: white; font-size: 22px;">
-                    <f:convertNumber locale="pt_BR" type="currency"/>
-                </h:outputText>
-            </h:panelGrid>
-            
+            </p:dialog>            
             <p:dialog id="impressRel" widgetVar="relatorio" header="Relatórios" closable="true" showEffect="fade">
                 <center>
                 <p:panelGrid columns="2">

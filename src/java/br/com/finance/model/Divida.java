@@ -11,6 +11,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
@@ -44,8 +46,9 @@ public class Divida implements Serializable{
    private String operacao;
    @Column(name="tipolancamento")
    private String tipolancamento;//Se foi Despesa ou Receita
-   @Column(name="empresa")
-   private String empresa;
+   @OneToOne
+   @JoinColumn(name="idcredor")
+   private Credores credor;
    @Column(name="vencimento")
    @Temporal(javax.persistence.TemporalType.DATE)
    private Date vencimento;
@@ -64,17 +67,37 @@ public class Divida implements Serializable{
    private String nivel;
    @Transient
    private String nome_mes;
-   
-   /**
-    * Uma divida pode ter vários pagamentos e um ou mais de um pagamento 
-    * pertence a  uma divida.
-    * 
-    **/
-  //@OneToMany(mappedBy = "id",cascade=CascadeType.ALL, fetch=FetchType.EAGER)   
-   // @JoinColumn(name = "dividaid")
-   // private List<Pagamento> pagamento;
+   @Column(name = "status",columnDefinition = "varchar(10) default 'Não Pago'")
+   private String status; //Status do pagamento,se é Não Pago ou Pago
+   @OneToOne
+   @JoinColumn(name = "idcartao")
+   private Cartao cartao;
+   @Column(name = "pagocartao")
+   private boolean pagoCartao; //Se foi pago com algum cartao de Credito
+   //Caso for pago por mais de um cartão cadastra n dividas apenas contendo 
+   //um cartao
    
     public Divida() {
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public String getTipolancamento() {
+        return tipolancamento;
+    }
+    
+    public void setTipolancamento(String tipolancamento) {
+        System.out.println("Mudando");
+        System.out.println(tipolancamento);
+        if(tipolancamento.equals("D")){
+            ativador = true;
+            System.out.println(ativador);
+        }else{
+            ativador = false;
+            System.out.println(ativador);}
+        this.tipolancamento = tipolancamento;
     }
 
     public Integer getId() {
@@ -117,28 +140,12 @@ public class Divida implements Serializable{
         this.operacao = operacao;
     }
 
-    public String getEmpresa() {
-        return empresa;
+    public Credores getCredor() {
+        return credor;
     }
 
-    public void setEmpresa(String empresa) {
-        this.empresa = empresa;
-    }
-
-    public String getTipolancamento() {
-        return tipolancamento;
-    }
-
-    public void setTipolancamento(String tipolancamento) {
-        System.out.println("Mudando");
-        System.out.println(tipolancamento);
-        if(tipolancamento.equals("D")){
-            ativador = true;
-            System.out.println(ativador);
-        }else{
-            ativador = false;
-            System.out.println(ativador);}
-        this.tipolancamento = tipolancamento;
+    public void setCredor(Credores credor) {
+        this.credor = credor;
     }
 
     public Date getVencimento() {
@@ -164,20 +171,6 @@ public class Divida implements Serializable{
     public void setObservacao(String observacao) {
         this.observacao = observacao;
     }
-    
-    /*   public List<Pagamento> getPagamento() {
-    return pagamento;
-    }
-    public void setPagamento(List<Pagamento> pagamento) {
-    this.pagamento = pagamento;
-    }*/
-    public boolean isAtivador() {
-        return ativador;
-    }
-
-    public void setAtivador(boolean ativador) {
-        this.ativador = ativador;
-    }
 
     public double getValortotal() {
         return valortotal;
@@ -185,6 +178,14 @@ public class Divida implements Serializable{
 
     public void setValortotal(double valortotal) {
         this.valortotal = valortotal;
+    }
+
+    public boolean isAtivador() {
+        return ativador;
+    }
+
+    public void setAtivador(boolean ativador) {
+        this.ativador = ativador;
     }
 
     public String getNivel() {
@@ -202,28 +203,59 @@ public class Divida implements Serializable{
     public void setNome_mes(String nome_mes) {
         this.nome_mes = nome_mes;
     }
-    
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Cartao getCartao() {
+        return cartao;
+    }
+
+    public void setCartao(Cartao cartao) {
+        this.cartao = cartao;
+    }
+
+    public boolean isPagoCartao() {
+        return pagoCartao;
+    }
+
+    public void setPagoCartao(boolean pagoCartao) {
+        this.pagoCartao = pagoCartao;
+    }
+
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 41 * hash + (this.id != null ? this.id.hashCode() : 0);
-        hash = 41 * hash + (this.descricao != null ? this.descricao.hashCode() : 0);
-        hash = 41 * hash + (this.datadeinicio != null ? this.datadeinicio.hashCode() : 0);
-        hash = 41 * hash + this.parcelas;
-        hash = 41 * hash + (this.operacao != null ? this.operacao.hashCode() : 0);
-        hash = 41 * hash + (this.tipolancamento != null ? this.tipolancamento.hashCode() : 0);
-        hash = 41 * hash + (this.empresa != null ? this.empresa.hashCode() : 0);
-        hash = 41 * hash + (this.vencimento != null ? this.vencimento.hashCode() : 0);
-        hash = 41 * hash + (this.exercicio != null ? this.exercicio.hashCode() : 0);
-        hash = 41 * hash + (this.observacao != null ? this.observacao.hashCode() : 0);
-        hash = 41 * hash + (int) (Double.doubleToLongBits(this.valortotal) ^ (Double.doubleToLongBits(this.valortotal) >>> 32));
-        hash = 41 * hash + (this.ativador ? 1 : 0);
-        hash = 41 * hash + (this.nivel != null ? this.nivel.hashCode() : 0);
+        int hash = 3;
+        hash = 97 * hash + (this.id != null ? this.id.hashCode() : 0);
+        hash = 97 * hash + (this.descricao != null ? this.descricao.hashCode() : 0);
+        hash = 97 * hash + (this.datadeinicio != null ? this.datadeinicio.hashCode() : 0);
+        hash = 97 * hash + this.parcelas;
+        hash = 97 * hash + (this.operacao != null ? this.operacao.hashCode() : 0);
+        hash = 97 * hash + (this.tipolancamento != null ? this.tipolancamento.hashCode() : 0);
+        hash = 97 * hash + (this.credor != null ? this.credor.hashCode() : 0);
+        hash = 97 * hash + (this.vencimento != null ? this.vencimento.hashCode() : 0);
+        hash = 97 * hash + (this.exercicio != null ? this.exercicio.hashCode() : 0);
+        hash = 97 * hash + (this.observacao != null ? this.observacao.hashCode() : 0);
+        hash = 97 * hash + (int) (Double.doubleToLongBits(this.valortotal) ^ (Double.doubleToLongBits(this.valortotal) >>> 32));
+        hash = 97 * hash + (this.ativador ? 1 : 0);
+        hash = 97 * hash + (this.nivel != null ? this.nivel.hashCode() : 0);
+        hash = 97 * hash + (this.nome_mes != null ? this.nome_mes.hashCode() : 0);
+        hash = 97 * hash + (this.status != null ? this.status.hashCode() : 0);
+        hash = 97 * hash + (this.cartao != null ? this.cartao.hashCode() : 0);
+        hash = 97 * hash + (this.pagoCartao ? 1 : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
         if (obj == null) {
             return false;
         }
@@ -231,34 +263,7 @@ public class Divida implements Serializable{
             return false;
         }
         final Divida other = (Divida) obj;
-        if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
-            return false;
-        }
-        if ((this.descricao == null) ? (other.descricao != null) : !this.descricao.equals(other.descricao)) {
-            return false;
-        }
-        if (this.datadeinicio != other.datadeinicio && (this.datadeinicio == null || !this.datadeinicio.equals(other.datadeinicio))) {
-            return false;
-        }
         if (this.parcelas != other.parcelas) {
-            return false;
-        }
-        if ((this.operacao == null) ? (other.operacao != null) : !this.operacao.equals(other.operacao)) {
-            return false;
-        }
-        if ((this.tipolancamento == null) ? (other.tipolancamento != null) : !this.tipolancamento.equals(other.tipolancamento)) {
-            return false;
-        }
-        if ((this.empresa == null) ? (other.empresa != null) : !this.empresa.equals(other.empresa)) {
-            return false;
-        }
-        if (this.vencimento != other.vencimento && (this.vencimento == null || !this.vencimento.equals(other.vencimento))) {
-            return false;
-        }
-        if ((this.exercicio == null) ? (other.exercicio != null) : !this.exercicio.equals(other.exercicio)) {
-            return false;
-        }
-        if ((this.observacao == null) ? (other.observacao != null) : !this.observacao.equals(other.observacao)) {
             return false;
         }
         if (Double.doubleToLongBits(this.valortotal) != Double.doubleToLongBits(other.valortotal)) {
@@ -267,12 +272,52 @@ public class Divida implements Serializable{
         if (this.ativador != other.ativador) {
             return false;
         }
+        if (this.pagoCartao != other.pagoCartao) {
+            return false;
+        }
+        if ((this.descricao == null) ? (other.descricao != null) : !this.descricao.equals(other.descricao)) {
+            return false;
+        }
+        if ((this.operacao == null) ? (other.operacao != null) : !this.operacao.equals(other.operacao)) {
+            return false;
+        }
+        if ((this.tipolancamento == null) ? (other.tipolancamento != null) : !this.tipolancamento.equals(other.tipolancamento)) {
+            return false;
+        }
+        if ((this.exercicio == null) ? (other.exercicio != null) : !this.exercicio.equals(other.exercicio)) {
+            return false;
+        }
+        if ((this.observacao == null) ? (other.observacao != null) : !this.observacao.equals(other.observacao)) {
+            return false;
+        }
         if ((this.nivel == null) ? (other.nivel != null) : !this.nivel.equals(other.nivel)) {
+            return false;
+        }
+        if ((this.nome_mes == null) ? (other.nome_mes != null) : !this.nome_mes.equals(other.nome_mes)) {
+            return false;
+        }
+        if ((this.status == null) ? (other.status != null) : !this.status.equals(other.status)) {
+            return false;
+        }
+        if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
+            return false;
+        }
+        if (this.datadeinicio != other.datadeinicio && (this.datadeinicio == null || !this.datadeinicio.equals(other.datadeinicio))) {
+            return false;
+        }
+        if (this.credor != other.credor && (this.credor == null || !this.credor.equals(other.credor))) {
+            return false;
+        }
+        if (this.vencimento != other.vencimento && (this.vencimento == null || !this.vencimento.equals(other.vencimento))) {
+            return false;
+        }
+        if (this.cartao != other.cartao && (this.cartao == null || !this.cartao.equals(other.cartao))) {
             return false;
         }
         return true;
     }
-   
+
+  
     @Override
     public String toString() {
         return  String.valueOf(id);

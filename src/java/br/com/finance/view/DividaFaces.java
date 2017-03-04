@@ -4,8 +4,12 @@
  */
 package br.com.finance.view;
 
+import br.com.finance.dao.CartaoDAO;
+import br.com.finance.dao.CredorDAO;
 import br.com.finance.dao.DividaDAO;
 import br.com.finance.dao.PagamentoDAO;
+import br.com.finance.model.Cartao;
+import br.com.finance.model.Credores;
 import br.com.finance.model.Divida;
 import br.com.finance.model.Pagamento;
 import br.com.finance.util.Reportutil;
@@ -16,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
@@ -39,29 +44,34 @@ public class DividaFaces implements Serializable {
     private String statuspagamento;
     FacesMessage msg;
     int parcelasparaoArray; //para poder setar as parcelas de acordo com a correspondente se x data a parcela é 1, y data a parcela é 2 e assim por diante.
-    Reportutil reportUtil = new Reportutil();
+    Reportutil reportUtil;
     private List<Divida> ListOfDividas;
-    private DividaDAO dividaDAO = new DividaDAO();
-    private PagamentoDAO pagDao = new PagamentoDAO();
-    private Divida selectedDivida = new Divida();
-    private Pagamento selectPagamento = new Pagamento();
+    private DividaDAO dividaDAO;
+    private PagamentoDAO pagDao;
+    private CartaoDAO cartDAO;
+    private CredorDAO credorDAO;
+    private Divida selectedDivida;
+    private Pagamento selectPagamento;
     private int dividaID;
     private boolean active = true;
     private boolean act;
     private boolean dividanestemes;//Se a divida já conta no mes da data de inicio, depende do dia do cartão;
     private String opcao;
-    private List<Divida> dividaSelect = new ArrayList<Divida>();
-    List<Divida> sugestoes = new ArrayList<Divida>();
-    DataCompare dt = new DataCompare();
+    private List<Divida> dividaSelect;
+    private List<Credores> credores;
+    List<Divida> sugestoes;
+    private List<Cartao> cartoes;
+    DataCompare dt;
     //Argumentos para os relatórios
     private int mesdesejado;
     private int anodesejado;
     private String nomeRelatorio;
+    
     /**
      * Váriaveis para o jogo de criação das dividas a partir das parcelas
      */
     private String novadescricao;
-    private String novaempresa;
+    private Credores novaempresa;
     private String novoexercicio;
     private String novaobservaocao;
     private String novaoperacaobancaria;
@@ -79,7 +89,21 @@ public class DividaFaces implements Serializable {
     public DividaFaces() {
         System.out.println("Mudando " + act);
     }
-    
+    @PostConstruct
+    public void init(){
+        dt = new DataCompare();
+        cartoes = new ArrayList<Cartao>();
+        credores = new ArrayList<Credores>();
+        cartDAO = new CartaoDAO();
+        credorDAO = new CredorDAO();
+        dividaSelect = new ArrayList<Divida>();
+        sugestoes = new ArrayList<Divida>();
+        selectPagamento = new Pagamento();
+        pagDao = new PagamentoDAO();
+        dividaDAO = new DividaDAO();
+        reportUtil = new Reportutil();
+        selectedDivida = new Divida();
+    }
     public void novaDivida() {
         selectedDivida = null;
           msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Já pode adicionar uma nova dívida!", null);
@@ -87,13 +111,44 @@ public class DividaFaces implements Serializable {
             selectedDivida = new Divida();
     }
     
+    public List<Cartao> completeCartao(String Name) {
+        List<Cartao> nomedocartao = new ArrayList<Cartao>();
+        if (cartoes == null || cartoes.isEmpty()) {
+            cartoes = cartDAO.getListCardByUsers("mlima");
+        }
+        for (Cartao pe : cartoes) {
+            if (pe.getDescricao().contains(Name)) {
+                pe.setIdcartao(pe.getIdcartao()== 0 ? null : pe.getIdcartao());
+                nomedocartao.add(pe);
+            }
+        }
+        return nomedocartao;
+    }
+    public List<Credores> completeCredor(String Name){
+        List<Credores> nomedocredor = new ArrayList<Credores>();
+        if (credores == null || credores.isEmpty()){
+            credores = credorDAO.getCredores();
+        }
+        for (Credores credor: credores){
+            if(credor.getNomeCredor().contains(Name)){
+                credor.setIdcredor(credor.getIdcredor() == 0 ? null : credor.getIdcredor());
+                nomedocredor.add(credor);
+            }
+        }
+        return nomedocredor;
+    }
     public List<Divida> getListofDivida() {
-        System.out.println("Lista de Dividas: " + ListOfDividas);
         if ((ListOfDividas == null) || ListOfDividas.isEmpty()) {
-            ListOfDividas = dividaDAO.getDividas();
+            ListOfDividas = dividaDAO.getListCadastradasNaoPagas();
             //ListOfDocumentos = documentDAO.listar(filtroAno, filtrocodDocumento, filtrotipo, filtroEntidade, filtroMes, filtrovalidade, filtroCliente);
         }
         return ListOfDividas;
+    }
+    public List<Divida> getListarTodasDividasUsuario(){
+        if(sugestoes.isEmpty() || sugestoes == null){
+            sugestoes = dividaDAO.getDividas();
+        }
+        return sugestoes;
     }
 
     /**
@@ -169,9 +224,15 @@ public class DividaFaces implements Serializable {
    public void addingDivida() throws Exception {
         
         try {
+             
+            if(selectedDivida.getTipolancamento().equals("D")){
+                selectedDivida.setStatus("Não Pago");
+            }else{
+                selectedDivida.setStatus("Recebido");
+            }
             novodatainicio = selectedDivida.getDatadeinicio();
             novadescricao = selectedDivida.getDescricao();
-            novaempresa = selectedDivida.getEmpresa();
+            novaempresa = selectedDivida.getCredor();
             novoexercicio = selectedDivida.getExercicio();
             novaobservaocao = selectedDivida.getObservacao();
             novaoperacaobancaria = selectedDivida.getOperacao();
@@ -210,7 +271,7 @@ public class DividaFaces implements Serializable {
                     selectedDivida.setDatadeinicio(novodatainicio);
                     selectedDivida.setDescricao(novadescricao);
                     selectedDivida.setNivel(novonilvel);
-                    selectedDivida.setEmpresa(novaempresa);
+                    selectedDivida.setCredor(novaempresa);
                     selectedDivida.setExercicio(novoexercicio);
                     selectedDivida.setObservacao(novaobservaocao);
                     selectedDivida.setOperacao(novaoperacaobancaria);
@@ -218,6 +279,7 @@ public class DividaFaces implements Serializable {
                     selectedDivida.setTipolancamento(novotipolancamento);
                     selectedDivida.setValortotal(novovalor);
                     selectedDivida.setVencimento(novovencimento);
+                   
                     dividaDAO.addDivida(selectedDivida);
                 }
             }
@@ -288,6 +350,8 @@ public class DividaFaces implements Serializable {
         }
         return sugestoes;
     }
+    
+    
     
    public void printReport() throws IOException, JRException, ClassNotFoundException, Exception{
        System.out.println("Mes: "+mesdesejado+ " Modelo: "+nomeRelatorio);
@@ -381,67 +445,59 @@ public class DividaFaces implements Serializable {
     public void setNovadescricao(String novadescricao) {
         this.novadescricao = novadescricao;
     }
-    
-    public String getNovaempresa() {
-        return novaempresa;
-    }
-    
-    public void setNovaempresa(String novaempresa) {
-        this.novaempresa = novaempresa;
-    }
-    
+
     public String getNovoexercicio() {
         return novoexercicio;
     }
-    
+
     public void setNovoexercicio(String novoexercicio) {
         this.novoexercicio = novoexercicio;
     }
-    
+
     public String getNovaobservaocao() {
         return novaobservaocao;
     }
-    
+
     public void setNovaobservaocao(String novaobservaocao) {
         this.novaobservaocao = novaobservaocao;
     }
-    
+
     public String getNovaoperacaobancaria() {
         return novaoperacaobancaria;
     }
-    
+
     public void setNovaoperacaobancaria(String novaoperacaobancaria) {
         this.novaoperacaobancaria = novaoperacaobancaria;
     }
-    
+
     public int getNovaparcela() {
         return novaparcela;
     }
-    
+
     public void setNovaparcela(int novaparcela) {
         this.novaparcela = novaparcela;
     }
-    
+
     public String getNovotipolancamento() {
         return novotipolancamento;
     }
-    
+
     public void setNovotipolancamento(String novotipolancamento) {
         this.novotipolancamento = novotipolancamento;
     }
-    
+
     public Date getNovovencimento() {
         return novovencimento;
     }
-    
+
     public void setNovovencimento(Date novovencimento) {
         this.novovencimento = novovencimento;
     }
-    
+
     public Date getNovodatainicio() {
         return novodatainicio;
     }
-    
+
     public void setNovodatainicio(Date novodatainicio) {
         this.novodatainicio = novodatainicio;
     }
@@ -449,63 +505,63 @@ public class DividaFaces implements Serializable {
     public boolean isDividanestemes() {
         return dividanestemes;
     }
-    
+
     public boolean isAct() {
         return act;
     }
-    
+
     public void setAct(boolean act) {
         this.act = act;
     }
-    
+
     public Calendar getCal() {
         return cal;
     }
-    
+
     public void setCal(Calendar cal) {
         this.cal = cal;
     }
-    
+
     public static long getSerialVersionUID() {
         return serialVersionUID;
     }
-    
+
     public List<Divida> getDividaSelect() {
         return dividaSelect;
     }
-    
+
     public void setDividaSelect(List<Divida> dividaSelect) {
         this.dividaSelect = dividaSelect;
     }
-    
+
     public List<Divida> getSugestoes() {
         return sugestoes;
     }
-    
+
     public void setSugestoes(List<Divida> sugestoes) {
         this.sugestoes = sugestoes;
     }
-    
+
     public double getNovovalor() {
         return novovalor;
     }
-    
+
     public void setNovovalor(double novovalor) {
         this.novovalor = novovalor;
     }
-    
+
     public DataCompare getDt() {
         return dt;
     }
-    
+
     public void setDt(DataCompare dt) {
         this.dt = dt;
     }
-    
+
     public String getNovonilvel() {
         return novonilvel;
     }
-    
+
     public void setNovonilvel(String novonilvel) {
         this.novonilvel = novonilvel;
     }
@@ -562,5 +618,44 @@ public class DividaFaces implements Serializable {
     public void setAnodesejado(int anodesejado) {
         this.anodesejado = anodesejado;
     }
-    
+
+    public CartaoDAO getCartDAO() {
+        return cartDAO;
+    }
+
+    public void setCartDAO(CartaoDAO cartDAO) {
+        this.cartDAO = cartDAO;
+    }
+
+    public CredorDAO getCredorDAO() {
+        return credorDAO;
+    }
+
+    public void setCredorDAO(CredorDAO credorDAO) {
+        this.credorDAO = credorDAO;
+    }
+
+    public List<Credores> getCredores() {
+        return credores;
+    }
+
+    public void setCredores(List<Credores> credores) {
+        this.credores = credores;
+    }
+
+    public List<Cartao> getCartoes() {
+        return cartoes;
+    }
+
+    public void setCartoes(List<Cartao> cartoes) {
+        this.cartoes = cartoes;
+    }
+
+    public Credores getNovaempresa() {
+        return novaempresa;
+    }
+
+    public void setNovaempresa(Credores novaempresa) {
+        this.novaempresa = novaempresa;
+    }
 }

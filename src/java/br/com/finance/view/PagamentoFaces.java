@@ -9,8 +9,10 @@ import br.com.finance.dao.PagamentoDAO;
 import br.com.finance.model.Divida;
 import br.com.finance.model.Pagamento;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
@@ -30,15 +32,33 @@ public class PagamentoFaces implements Serializable{
     private int mes;
     private boolean buscar;
     private List<Pagamento> ListOfPagamento;
-    private PagamentoDAO pagDAO = new PagamentoDAO();
-    private Pagamento selectedPagamento = new Pagamento();
-    DividaFaces df = new DividaFaces();
-    Divida divi = new Divida();
+    private List<Divida> listOfDivida;
+    private PagamentoDAO pagDAO;
+    private Pagamento selectedPagamento;
+    Divida divi;
+    DividaDAO dividaDAO;
     private int pagamentoID;
     private double valorDeGasto;
+    private double valorRecebido;
    
+    /* Variaveis para Planejamento financeiro*/
+     double valorTrabalhado;
+     double valorEssencial;
+     double valorEducacao;
+     double valorExtra;
+     double valorParaCartao;
+     double valorParaSonho;
+     double valorParaAposentadoria;
     
     public PagamentoFaces() {
+    }
+    
+    @PostConstruct
+    public void init(){
+        pagDAO = new PagamentoDAO();
+        selectedPagamento = new Pagamento();
+        divi = new Divida();
+        dividaDAO = new DividaDAO();
     }
     
       public void cleanPay(){
@@ -58,7 +78,7 @@ public class PagamentoFaces implements Serializable{
               }
               for (Divida dvd: ListOptionDivida){
                   //dvd.getId(), dvd.getId()+' - '+dvd.getEmpresa()
-                  toDataReturn.add(new SelectItem(dvd,dvd.getId()+" - "+dvd.getEmpresa()));
+                  toDataReturn.add(new SelectItem(dvd,dvd.getId()+" - "+dvd.getCredor().getNomeCredor()));
               }
           }catch (Exception e){
               e.printStackTrace();
@@ -78,7 +98,7 @@ public class PagamentoFaces implements Serializable{
 
         try {
             selectedPagamento.setStatuspagamento("Pago");
-            pagDAO.addPagamentov2(selectedPagamento);
+            pagDAO.addPagamento(selectedPagamento);
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Dados gravados com sucesso!", null);
             FacesContext.getCurrentInstance().addMessage("add", msg);
             cleanPay();
@@ -152,9 +172,66 @@ public class PagamentoFaces implements Serializable{
            }
            return valorDeGasto;
        }
+       public double getValorRecebidoNoPeriodo(){
+           valorRecebido = 0.0;
+           try{
+               valorRecebido = dividaDAO.verificaoDeReceitaRecebida(mes, ano);
+           }catch (Exception e){
+               e.printStackTrace();
+           }
+           return valorRecebido;
+       }
+       
+       public void planejamentoFinanceiro(){
+            valorTrabalhado = 0.0;
+            valorEssencial =0.0;
+            valorEducacao = 0.0;
+            valorExtra=0.0;
+            valorParaCartao=0.0;
+           valorParaSonho =0.0;
+           valorParaAposentadoria = 0.0;
+           
+           valorTrabalhado = getValorRecebidoNoPeriodo();
+           
+           valorEssencial         = (valorTrabalhado*0.55);
+           valorEducacao          = (valorTrabalhado*0.05);
+           valorExtra             = (valorTrabalhado*0.10);
+           valorParaCartao        = (valorTrabalhado*0.30);
+           valorParaSonho         = (valorTrabalhado*0.20);
+           valorParaAposentadoria = (valorTrabalhado*0.10);
+           
+           
+       }
    /*    public int idDividia(){
            df.fornecedordeID();
        }*/
+   
+     public void atualizarValor(){
+         selectedPagamento.setValor(selectedPagamento.getDivida().getValortotal());
+         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Atualizando o valor com sucesso!", null);
+         FacesContext.getCurrentInstance().addMessage("add", msg);
+         System.out.println("Valor Atualizado: "+selectedPagamento.getValor());
+     }
+     public List<Divida> completeDivida(String Name) {
+        List<Divida> dividas = new ArrayList<Divida>();
+        DividaDAO divDAO = new DividaDAO();
+        if (listOfDivida == null || listOfDivida.isEmpty()) {
+            if(buscar){
+                listOfDivida = divDAO.getDividasByMonth(mes, ano); //Mudar este método para que só visualize as dividas no período só não pagas
+            }else{
+                listOfDivida = divDAO.getListCadastradasNaoPagas();
+            }
+            divDAO = null;
+        }
+        for (Divida pe : listOfDivida) {
+            if (pe.getDescricao().contains(Name)) {
+                pe.setId(pe.getId()== 0 ? null : pe.getId());
+                dividas.add(pe);
+            }
+        }
+        return dividas;
+    }
+     
     public FacesMessage getMsg() {
         return msg;
     }
@@ -220,14 +297,6 @@ public class PagamentoFaces implements Serializable{
         this.valorDeGasto = valorDeGasto;
     }
 
-    public DividaFaces getDf() {
-        return df;
-    }
-
-    public void setDf(DividaFaces df) {
-        this.df = df;
-    }
-
     public Divida getDivi() {
         return divi;
     }
@@ -243,6 +312,30 @@ public class PagamentoFaces implements Serializable{
     public void setBuscar(boolean buscar) {
         this.buscar = buscar;
     }
-       
+
+    public List<Divida> getListOfDivida() {
+        return listOfDivida;
+    }
+
+    public void setListOfDivida(List<Divida> listOfDivida) {
+        this.listOfDivida = listOfDivida;
+    }
+
+    public DividaDAO getDividaDAO() {
+        return dividaDAO;
+    }
+
+    public void setDividaDAO(DividaDAO dividaDAO) {
+        this.dividaDAO = dividaDAO;
+    }
+
+    public double getValorRecebido() {
+        return valorRecebido;
+    }
+
+    public void setValorRecebido(double valorRecebido) {
+        this.valorRecebido = valorRecebido;
+    }
+    
        
 }

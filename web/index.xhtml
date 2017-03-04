@@ -8,9 +8,7 @@
     </h:head>
     <h:body style="background-color: #CE8B3A">
         <h:form id="formfinanc">
-            
         <br />
-        
         <center>
             <p:panel  header="Bem vindo ao Financé || Versão #{sistema.VERSION}"  toggleTitle="Login" >
                 <h:panelGrid id="mens" columns="1">
@@ -22,7 +20,7 @@
                     <p:outputLabel for="passuser" value="Senha: "/>
                     <p:password id="passuser" required="true" requiredMessage="Campo senha não pode está vazio" value="#{usuarioFaces.selectedUsuarios.password}"/>
                     <h:outputText/>
-                    <p:commandButton value="Entrar" action="#{usuarioFaces.loginConnection()}" update=":formfinanc:info"/>
+                    <p:commandButton value="Entrar" action="#{usuarioFaces.loginConnection()}" ajax="false" update=":formfinanc:info"/>
                 </h:panelGrid>   
              </p:panel>
             

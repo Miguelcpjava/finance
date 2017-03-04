@@ -6,10 +6,20 @@
       xmlns:f="http://java.sun.com/jsf/core">
     <h:head>
         <title>Cadastro de Dividas do #{sistema.NOMESISTEMA}</title>
+        <script>
+               function moeda(z){
+                        v = z.value;
+                        v = v.replace(/\D/g,"")  //permite digitar apenas números
+                        v = v.replace(/[0-9]{12}/,"inválido")   //limita pra máximo 999.999.999,99
+                        v = v.replace(/(\d{1})(\d{8})$/,"$1.$2")  //coloca ponto antes dos últimos 8 digitos
+                        v = v.replace(/(\d{1})(\d{5})$/,"$1.$2")  //coloca ponto antes dos últimos 5 digitos
+                        v = v.replace(/(\d{1})(\d{1,2})$/,"$1,$2")        //coloca virgula antes dos últimos 2 digitos
+                        z.value = v;
+                };
+           </script>
     </h:head>
     <h:body style="background-color: #CE8B3A">
         <h:form id="formdivida">
-            <h:link outcome="/menu/principal.jsf" value="Voltar" style="font-weight: bold; color: white;"/>
             <p:messages autoUpdate="true" closable="true" showDetail="true" id="warn"/>
             <center>
                 <p:panelGrid columns="2" style="width: 60%;" id="pnldivida">
@@ -32,13 +42,26 @@
             </p:calendar>
             
             <p:outputLabel for="valortotal" value="Valor: "/>
-            <p:inputText id="valortotal" required="true" value="#{dividaFaces.selectedDivida.valortotal}">
+            <p:inputText id="valortotal" required="true" value="#{dividaFaces.selectedDivida.valortotal}" onkeyup="moeda(this)">
                        <f:convertNumber pattern="#,##0.00" minFractionDigits="2"  />  
             </p:inputText>
-            <p:outputLabel for="parcelas" value="Parcelas: "/>
-            <p:spinner id="parcelas" value="#{dividaFaces.selectedDivida.parcelas}" size="4" title="0 é igual a compra a vista!"/>
+            <p:outputLabel for="parcelas" value="Parcelas: " rendered="#{dividaFaces.selectedDivida.tipolancamento eq 'D'}"/>
+            <p:spinner id="parcelas" value="#{dividaFaces.selectedDivida.parcelas}" size="4" title="0 é igual a compra a vista!" rendered="#{dividaFaces.selectedDivida.tipolancamento eq 'D'}"/>
             <p:outputLabel id="lbchoisethismonth" value="Aplicar neste mês?" for="thismonth" title="Marque está opção caso queira que a divida seja aplicada no mês da data de inicio." rendered="#{dividaFaces.selectedDivida.tipolancamento eq 'D'}"/>
             <p:selectBooleanCheckbox id="thismonth" value="#{dividaFaces.dividanestemes}" rendered="#{dividaFaces.selectedDivida.tipolancamento eq 'D'}"/>
+            <p:outputLabel id="cartao" value="Pago com cartão" for="bcartao" rendered="#{dividaFaces.selectedDivida.tipolancamento eq 'D'}"/>
+            <p:selectBooleanCheckbox id="bcartao" value="#{dividaFaces.selectedDivida.pagoCartao}" rendered="#{dividaFaces.selectedDivida.tipolancamento eq 'D'}">
+                 <p:ajax  event="change" update="@form"/>
+            </p:selectBooleanCheckbox>
+            <p:outputLabel id="lbcartao" value="Cartão de Credito" for="ccredito" rendered="#{dividaFaces.selectedDivida.pagoCartao}"/>
+            <p:autoComplete id="ccredito" rendered="#{dividaFaces.selectedDivida.pagoCartao}"
+                            value="#{dividaFaces.selectedDivida.cartao}"
+                            completeMethod="#{dividaFaces.completeCartao}" var="ct"
+					itemLabel="#{ct.descricao}" itemValue="#{ct}"
+					dropdown="true" converter="cartaoConverter" required="true"
+					requiredMessage="Escolher o cartão de crédito"
+                                        emptyMessage="Não a cartão disponível"
+                                        size="80"/>
             <p:outputLabel for="operacao" value="Operação: " rendered="#{dividaFaces.selectedDivida.tipolancamento eq 'D'}" />
             <p:selectOneMenu id="operacao" value="#{dividaFaces.selectedDivida.operacao}" rendered="#{dividaFaces.selectedDivida.tipolancamento eq 'D'}">
                 <f:selectItem itemLabel="|| - Selecione - || "/>
@@ -46,8 +69,15 @@
                 <f:selectItem itemLabel="Recebimento" itemValue="Recebimento"/>
                 <f:selectItem itemLabel="Transferência" itemValue="Transferencia"/>
             </p:selectOneMenu>
-            <p:outputLabel for="empresa" value="Empresa"/>
-            <p:inputText id="empresa" size="90" value="#{dividaFaces.selectedDivida.empresa}"/>
+            <p:outputLabel for="credor" value="Credor"/>
+            <p:autoComplete id="credor"
+                            value="#{dividaFaces.selectedDivida.credor}"
+                            completeMethod="#{dividaFaces.completeCredor}" var="cred"
+					itemLabel="#{cred.nomeCredor}" itemValue="#{cred}"
+					dropdown="true" converter="credorConverter" required="true"
+					requiredMessage="Informe o credor"
+                                        emptyMessage="Não há credor disponível"
+                                        size="80"/>
             <h:outputText  id="lblvencimento" value="Vencimento: " rendered="#{dividaFaces.selectedDivida.tipolancamento eq 'D'}"/>
             <p:calendar id="vencimento" mindate="#{dividaFaces.selectedDivida.datadeinicio}" locale="pt" showButtonPanel="true" navigator="true" value="#{dividaFaces.selectedDivida.vencimento}" rendered="#{dividaFaces.selectedDivida.tipolancamento eq 'D'}"/>
             <p:outputLabel for="exercicio" value="Exercício: " />
@@ -57,15 +87,13 @@
 
             <f:facet name="footer">
                 <center>
-                   
                     <p:commandButton value="Inserir" action="#{dividaFaces.novaDivida()}" update=":formdivida:warn :formdivida:pnldivida"/>
                     <p:commandButton value="Salvar" action="#{dividaFaces.addingDivida()}" update=":formdivida:warn :formdivida:pnldivida" /> 
+                    <p:button value="Voltar" outcome="/menu/principal.jsf"/>
                     <br/> 
-                    
                 #{sistema.NOMESISTEMA} v#{sistema.VERSION}
                 </center>
             </f:facet>
-            
             </p:panelGrid>
                 </center>
         </h:form>

@@ -42,6 +42,8 @@ public class Pagamento implements Serializable {
    @ManyToOne()
    @JoinColumn(name = "iddivida")
    private Divida divida;
+   @Column(name = "observacao")
+   private String observacao;
  
     public Pagamento() {
     }
@@ -94,20 +96,32 @@ public class Pagamento implements Serializable {
         this.statuspagamento = statuspagamento;
     }
 
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 97 * hash + (this.id != null ? this.id.hashCode() : 0);
-        hash = 97 * hash + (this.datapagamento != null ? this.datapagamento.hashCode() : 0);
-        hash = 97 * hash + (int) (Double.doubleToLongBits(this.valor) ^ (Double.doubleToLongBits(this.valor) >>> 32));
-        hash = 97 * hash + (this.statuspagamento != null ? this.statuspagamento.hashCode() : 0);
-        hash = 97 * hash + (this.formapagamento != null ? this.formapagamento.hashCode() : 0);
-        hash = 97 * hash + (this.divida != null ? this.divida.hashCode() : 0);
+        hash = 83 * hash + (this.id != null ? this.id.hashCode() : 0);
+        hash = 83 * hash + (this.datapagamento != null ? this.datapagamento.hashCode() : 0);
+        hash = 83 * hash + (int) (Double.doubleToLongBits(this.valor) ^ (Double.doubleToLongBits(this.valor) >>> 32));
+        hash = 83 * hash + (this.statuspagamento != null ? this.statuspagamento.hashCode() : 0);
+        hash = 83 * hash + (this.formapagamento != null ? this.formapagamento.hashCode() : 0);
+        hash = 83 * hash + (this.divida != null ? this.divida.hashCode() : 0);
+        hash = 83 * hash + (this.observacao != null ? this.observacao.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
         if (obj == null) {
             return false;
         }
@@ -115,12 +129,6 @@ public class Pagamento implements Serializable {
             return false;
         }
         final Pagamento other = (Pagamento) obj;
-        if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
-            return false;
-        }
-        if (this.datapagamento != other.datapagamento && (this.datapagamento == null || !this.datapagamento.equals(other.datapagamento))) {
-            return false;
-        }
         if (Double.doubleToLongBits(this.valor) != Double.doubleToLongBits(other.valor)) {
             return false;
         }
@@ -130,14 +138,21 @@ public class Pagamento implements Serializable {
         if ((this.formapagamento == null) ? (other.formapagamento != null) : !this.formapagamento.equals(other.formapagamento)) {
             return false;
         }
+        if ((this.observacao == null) ? (other.observacao != null) : !this.observacao.equals(other.observacao)) {
+            return false;
+        }
+        if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
+            return false;
+        }
+        if (this.datapagamento != other.datapagamento && (this.datapagamento == null || !this.datapagamento.equals(other.datapagamento))) {
+            return false;
+        }
         if (this.divida != other.divida && (this.divida == null || !this.divida.equals(other.divida))) {
             return false;
         }
         return true;
     }
-
     
-
     @Override
     public String toString() {
         return String.valueOf(id);

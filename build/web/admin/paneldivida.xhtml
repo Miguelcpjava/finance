@@ -10,18 +10,40 @@
     <h:body style="background-color: #CE8B3A">
         <h:form id="pnldividaform">
             <p:messages id="msguser" autoUpdate="true" closable="true"/>
-              <h:link outcome="/menu/principal.jsf" value="Voltar" style="font-weight: bold; color: white;"/>
-              <p:dataTable value="#{dividaFaces.listofDivida}" var="dividas" rowKey="#{dividas.id}" selectionMode="single" emptyMessage="Não existe dividas cadastradas!"
-                            paginator="true" id="datauser" selection="#{dividaFaces.selectedDivida}" >
+              <p:button value="Voltar" outcome="/menu/principal.jsf"/>
+              <p:dataTable value="#{dividaFaces.listarTodasDividasUsuario}" var="dividas" rowKey="#{dividas.id}" selectionMode="single" emptyMessage="Não existe dividas cadastradas!"
+                           paginator="true" id="datauser" selection="#{dividaFaces.selectedDivida}" >
                  <p:ajax event="rowSelect" update=":pnldividaform:displaycaddivida" oncomplete="caddivida.show()"/>
                  <f:facet name="header">
                      Panel de Controle das Dividas
                  </f:facet>
-                 <p:column headerText="ID">
+                 <p:column headerText="ID" sortBy="#{dividas.id}">
                      #{dividas.id}
                  </p:column>
+                 <p:column headerText="Divida">
+                     <h:outputText value="#{dividas.descricao}"/>
+                 </p:column>
               </p:dataTable>
-              <p:dialog id="displaycaddivida" widgetVar="caddivida" header="Detalhes do Cadastro da Divida" showEffect="fade" hideEffect="explode" closable="true"></p:dialog>
+              <p:dialog id="displaycaddivida" widgetVar="caddivida" header="Detalhes do Cadastro da Divida" showEffect="fade" hideEffect="explode" closable="true">
+                  <p:panelGrid columns="2" style="width: 60%;" id="pnldivida">
+                   <p:outputLabel for="tipolanc" value="Tipo Lançamento: "/>
+            <p:selectOneMenu id="tipolanc" value="#{dividaFaces.selectedDivida.tipolancamento}">
+                <f:selectItem itemLabel="|| - Selecione - || "/>
+                <f:selectItem itemLabel="Receita" itemValue="R"/>
+                <f:selectItem itemLabel="Despesa" itemValue="D"/>
+            </p:selectOneMenu>
+            <p:outputLabel for="divida" value="Descricao da divida: "/>
+            <p:inputText id="divida" size="90" value="#{dividaFaces.selectedDivida.descricao}">
+            </p:inputText>
+            <p:outputLabel for="datainicio" value="Data inicio: "/>
+            <p:calendar id="datainicio" locale="pt" showButtonPanel="true" navigator="true" pattern="dd/MM/yyyy" value="#{dividaFaces.selectedDivida.datadeinicio}" required="true" requiredMessage="Este campo não pode ficar com valor nulo.">
+            </p:calendar>
+            <p:outputLabel for="valortotal" value="Valor: "/>
+            <p:inputText id="valortotal" required="true" value="#{dividaFaces.selectedDivida.valortotal}" onkeyup="moeda(this)">
+                       <f:convertNumber pattern="#,##0.00" minFractionDigits="2"/>
+            </p:inputText>
+            </p:panelGrid>
+              </p:dialog>
         </h:form>    
     </h:body>
 </html>

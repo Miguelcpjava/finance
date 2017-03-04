@@ -57,6 +57,11 @@ public class Reportutil {
                 Conn.isClosed();
         return Conn;
     }
+     public void closeConexao() throws SQLException{
+         if (!Conn.isClosed()){
+             Conn.close();
+         }
+     }
     public void imprimirRelatorio(int argumento1,int argumento2, String nomedorelatorio, String nomedocampoparaarguemntacao, String nomedegravacaodorelatorio) throws IOException, JRException, ClassNotFoundException, Exception {
         ServletOutputStream servletOutputStream;
         File arquivoGerado;
@@ -104,18 +109,22 @@ public class Reportutil {
                 facesContext.renderResponse();
                 facesContext.responseComplete();
                 System.out.println("Relatório gerado!");
+                closeConexao();
             }
 
         } catch (IOException ioe) {
             ioe.printStackTrace();
+            closeConexao();
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Falta do arquivo para geração do relatório!", null);
             FacesContext.getCurrentInstance().addMessage("add", msg);
         } catch (JRException jreE) {
             jreE.printStackTrace();
+            closeConexao();
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro no Ireport!", null);
             FacesContext.getCurrentInstance().addMessage("add", msg);
         } catch (Exception cnfe) {
             cnfe.printStackTrace();
+            closeConexao();
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro de Biblioteca que não Existe!", null);
             FacesContext.getCurrentInstance().addMessage("add", msg);
         }

@@ -29,12 +29,6 @@ public class PagamentoDAO extends GenericDao implements Serializable {
         savingPojo(pagamentos);
         return pagamentos.getId();
     }
-
-    public int addPagamentov2(Pagamento pagamentos) {
-        savingWithOutUpdate(pagamentos);
-        return pagamentos.getId();
-    }
-
     public void removePagamento(Pagamento pagamentos) {
         removePojo(pagamentos);
     }
@@ -76,15 +70,15 @@ public class PagamentoDAO extends GenericDao implements Serializable {
 
     public double verificaoDeGasto(int mes, int ano) {
         double valortotalmes = 0.0;
-        Query qr = HibernateUtil.getSession().createSQLQuery("SELECT IFNULL(SUM(pag.valorpagamento),0) FROM pagamento pag where month(pag.datapagamento)=" + mes + " and year(pag.datapagamento)=" + ano + "");
         try {
+            Query qr = HibernateUtil.getSession().createSQLQuery("SELECT COALESCE(SUM(pag.valorpagamento),0) FROM pagamento pag where date_part('month', pag.datapagamento)=:mes and date_part('YEAR', pag.datapagamento)=:ano");
+            qr.setParameter("mes", mes);
+            qr.setParameter("ano", ano);
             valortotalmes = (Double) qr.uniqueResult();
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Erro no método verificação de Gasto de acordo com o periodo escolhido na classe PagamentoDAO");
         }
-        
         return valortotalmes;
     }
-    
 }

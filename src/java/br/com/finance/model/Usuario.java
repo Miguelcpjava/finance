@@ -4,7 +4,6 @@
  */
 package br.com.finance.model;
 
-import br.com.finance.util.Criptografia;
 import br.com.finance.util.Datas;
 import br.com.ltn4java.data.DataCompare;
 import java.io.Serializable;
@@ -26,6 +25,8 @@ import javax.persistence.Temporal;
 @Entity
 @Table(name="usuario")
 public class Usuario implements Serializable {
+
+    private static final long serialVersionUID = 2513289174030204540L;
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +47,8 @@ public class Usuario implements Serializable {
     private Date datanascimento;
     @Column(name="statususuario")
     private String status;
+    @Column(name = "regra")
+    private String regra;
     
     public Usuario() {
     }
@@ -70,11 +73,7 @@ public class Usuario implements Serializable {
         return password;
     }
 
-    public void setPassword(String password) throws Throwable {         
-        System.out.println("SETANDO O PASSWORD");
-        Criptografia cripto = new Criptografia();
-        String passCripto = cripto.encriptar(cripto.CHAVE, password);
-        password = passCripto;
+    public void setPassword(String password) {         
         this.password = password;
     }
 
@@ -127,23 +126,35 @@ public class Usuario implements Serializable {
         int idade =  (int)Math.floor(valor);
         return idade;
     }
-    
+
+    public String getRegra() {
+        return regra;
+    }
+
+    public void setRegra(String regra) {
+        this.regra = regra;
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 67 * hash + this.id;
-        hash = 67 * hash + (this.login != null ? this.login.hashCode() : 0);
-        hash = 67 * hash + (this.password != null ? this.password.hashCode() : 0);
-        hash = 67 * hash + (this.nome != null ? this.nome.hashCode() : 0);
-        hash = 67 * hash + (this.sobrenome != null ? this.sobrenome.hashCode() : 0);
-        hash = 67 * hash + (this.datadecadastro != null ? this.datadecadastro.hashCode() : 0);
-        hash = 67 * hash + (this.datanascimento != null ? this.datanascimento.hashCode() : 0);
-        hash = 67 * hash + (this.status != null ? this.status.hashCode() : 0);
+        hash = 19 * hash + this.id;
+        hash = 19 * hash + (this.login != null ? this.login.hashCode() : 0);
+        hash = 19 * hash + (this.password != null ? this.password.hashCode() : 0);
+        hash = 19 * hash + (this.nome != null ? this.nome.hashCode() : 0);
+        hash = 19 * hash + (this.sobrenome != null ? this.sobrenome.hashCode() : 0);
+        hash = 19 * hash + (this.datadecadastro != null ? this.datadecadastro.hashCode() : 0);
+        hash = 19 * hash + (this.datanascimento != null ? this.datanascimento.hashCode() : 0);
+        hash = 19 * hash + (this.status != null ? this.status.hashCode() : 0);
+        hash = 19 * hash + (this.regra != null ? this.regra.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
         if (obj == null) {
             return false;
         }
@@ -169,14 +180,19 @@ public class Usuario implements Serializable {
         if ((this.datadecadastro == null) ? (other.datadecadastro != null) : !this.datadecadastro.equals(other.datadecadastro)) {
             return false;
         }
-        if (this.datanascimento != other.datanascimento && (this.datanascimento == null || !this.datanascimento.equals(other.datanascimento))) {
+        if ((this.status == null) ? (other.status != null) : !this.status.equals(other.status)) {
             return false;
         }
-        if ((this.status == null) ? (other.status != null) : !this.status.equals(other.status)) {
+        if ((this.regra == null) ? (other.regra != null) : !this.regra.equals(other.regra)) {
+            return false;
+        }
+        if (this.datanascimento != other.datanascimento && (this.datanascimento == null || !this.datanascimento.equals(other.datanascimento))) {
             return false;
         }
         return true;
     }
+    
+    
     @Override
     public String toString() {
         return  id + "-" + nome + " " + sobrenome;

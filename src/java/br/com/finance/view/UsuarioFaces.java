@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
@@ -31,21 +32,26 @@ public class UsuarioFaces implements Serializable{
 
     FacesMessage msg;
     private List<Usuario> ListOfUsers;
-    private UsuarioDAO userDAO = new UsuarioDAO();
-    private Usuario selectedUsuarios = new Usuario();
+    private UsuarioDAO userDAO;
+    private Usuario selectedUsuarios;
     private Usuario compareuser;
     private int UsuarioID;
     private boolean active = true;
-    Criptografia cripto = new Criptografia();
+    Criptografia cripto;
     
     public UsuarioFaces() {
+    }
+    @PostConstruct
+    public void init(){
+        userDAO = new UsuarioDAO();
+        selectedUsuarios = new Usuario();
+        cripto = new Criptografia();
     }
     
      public void cleanUser(){
          selectedUsuarios = null;
      }
       public List<Usuario> getListofUser() {
-        System.out.println("Lista de Usuários: " + ListOfUsers);
         if ((ListOfUsers == null) || ListOfUsers.isEmpty()) {
             ListOfUsers = userDAO.getUsers();
             //ListOfDocumentos = documentDAO.listar(filtroAno, filtrocodDocumento, filtrotipo, filtroEntidade, filtroMes, filtrovalidade, filtroCliente);
@@ -53,9 +59,10 @@ public class UsuarioFaces implements Serializable{
         return ListOfUsers;
     }
      
-       public void addingUser() throws Exception {
+       public void addingUser() throws Exception, Throwable {
 
         try {
+            selectedUsuarios.setPassword(cripto.encriptar(cripto.CHAVE, selectedUsuarios.getPassword()));
             userDAO.addUsuario(selectedUsuarios);
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Dados gravados com sucesso!", null);
             FacesContext.getCurrentInstance().addMessage("add", msg);
@@ -96,32 +103,20 @@ public class UsuarioFaces implements Serializable{
             FacesContext.getCurrentInstance().addMessage("add", msg);
         }
     } 
-     
-     public void descubrir() throws Throwable { 
-         String pass;
-         pass = userDAO.senha(selectedUsuarios.getLogin());
-         System.out.println("Senha limpa "+pass);
-        
-     }
      public String loginConnection() throws Throwable{
-         String criptografadoPass = null;
          String conecta = null;
          String descriptoDigitado = null;
          try{
-         compareuser = userDAO.validarLoginUser(selectedUsuarios.getLogin(), selectedUsuarios.getPassword());
-         criptografadoPass = cripto.decriptar(cripto.CHAVE, compareuser.getPassword());
-         descriptoDigitado = cripto.decriptar(cripto.CHAVE, selectedUsuarios.getPassword());
-            System.out.println("Senha "+criptografadoPass);
-            System.out.println("Senha Digitada "+selectedUsuarios.getPassword());
-            if(compareuser.getLogin().equals(selectedUsuarios.getLogin()) && criptografadoPass.equals(descriptoDigitado) ){
+             descriptoDigitado = cripto.encriptar(cripto.CHAVE, selectedUsuarios.getPassword());
+             if( userDAO.validarLoginUser(selectedUsuarios.getLogin(), descriptoDigitado) != null){
                 conecta = "Sucess";
-            }else{
+             }else{
                 conecta = "NotSucess";
-            System.out.println("Login Usuário Não Aceito!");
+             }
+        }catch (Exception e){
+              System.out.println("Login Usuário Não Aceito!");
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,"Usuário ou senha inválido", "Favor digitar login ou senha válida.");
             FacesContext.getCurrentInstance().addMessage("add", msg);
-            }
-        }catch (Exception e){
             e.getMessage();
         }
         return conecta;

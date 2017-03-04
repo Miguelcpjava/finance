@@ -33,9 +33,9 @@
                 <p:outputLabel for="nascimentouser" value="Data de Nascimento: "/>
                 <p:calendar id="nascimentouser" value="#{usuarioFaces.selectedUsuarios.datanascimento}"/>
                 <p:outputLabel for="funcaouser" value="Função: "/>
-                <p:selectOneMenu id="funcaouser" >
+                <p:selectOneMenu id="funcaouser" value="#{usuarioFaces.selectedUsuarios.regra}" >
                     <f:selectItem itemLabel="|| - Selecione - ||"/>
-                    
+                    <f:selectItem itemValue="ROLE_USER_COMUM" itemLabel="Comun"/>
                 </p:selectOneMenu>
                 <p:outputLabel for="enableuser" value="Ativo: "/>
                 <p:selectBooleanButton id="enableuser" offLabel="Desativado" onLabel="Ativado" value="#{usuarioFaces.selectedUsuarios.status}"/>

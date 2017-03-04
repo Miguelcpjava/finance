@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Cadastro de credor do #{sistema.NOMESISTEMA}</title>
+    </h:head>
+    <h:body style="background-color: #CE8B3A">
+        <h:form id="formcredor">
+            <p:growl id="msg" life="5000" autoUpdate="true" showSummary="true"/>
+            <p:panelGrid columns="2" id="pnlcredor">
+                <f:facet name="header">
+                    Cadastro de Credor
+                </f:facet>
+                <p:outputLabel id="lbtipo" value="Tipo Pessoa: " for="tipopessoa"/>
+                <p:selectOneMenu id="tipopessoa" value="#{credorFaces.selectedCredor.tipopessoa}">
+                    <f:selectItem itemLabel="|| - Selecione - || "/>
+                    <f:selectItem itemLabel="CPF" itemValue="PF"/>
+                    <f:selectItem itemLabel="CNPJ" itemValue="PJ"/>
+                    <f:selectItem itemLabel="Outro" itemValue="O"/>
+                    <p:ajax event="change" update=":formcredor:pnlcredor" process="@this"/>
+                </p:selectOneMenu>
+                <p:outputLabel id="lbcpf" value="CPF: " for="pf" rendered="#{credorFaces.selectedCredor.tipopessoa eq 'PF'}"/>
+                <p:inputMask id="pf" mask="999.999.999-99" value="#{credorFaces.selectedCredor.cpfcnpj}" rendered="#{credorFaces.selectedCredor.tipopessoa eq 'PF'}"/>
+                <p:outputLabel id="lbcnpj" value="CNPJ: " for="pj" rendered="#{credorFaces.selectedCredor.tipopessoa eq 'PJ'}"/>
+                <p:inputMask id="pj" mask="99.999.999/9999-99" value="#{credorFaces.selectedCredor.cpfcnpj}" rendered="#{credorFaces.selectedCredor.tipopessoa eq 'PJ'}"/>
+               
+            </p:panelGrid>
+            
+             <p:ajaxStatus>
+                     <f:facet name="start">
+                        <img src="../resources/img/kOnzy.gif" width="16px" height="16px" alt="" />
+                    </f:facet>
+                 <p:panelGrid columns="2" id="pnlendcredor">
+                    <p:outputLabel id="lbcep" value="CEP: " for="cep"/>
+                    <p:inputMask id="cep" mask="99999-999" value="#{credorFaces.selectedCredor.cepcredor}" >
+                        <p:ajax event="blur" update=":formcredor:pnlendcredor" process="@this" listener="#{credorFaces.buscarEnderecoCredor()}"/>
+                    </p:inputMask>
+                    
+                    <p:outputLabel id="lbnome" value="Nome: " for="nomecredor"></p:outputLabel>
+                    <p:inputText id="nomecredor" value="#{credorFaces.selectedCredor.nomeCredor}" size="90"/>
+                    
+                    <p:outputLabel id="lbendereco" value="Endereço: " for="endereco"/>
+                    <p:inputText id="endereco" value="#{credorFaces.selectedCredor.enderecocredor}" size="90"/>
+                    
+                    <p:outputLabel id="lbnumero" value="Nº: " for="numero"/>
+                    <p:inputText id="numero" value="#{credorFaces.selectedCredor.numeroendereco}"/>
+                    
+                    <p:outputLabel id="lbbairro" value="Bairro: " for="bairrocredor"/>
+                    <p:inputText id="bairrocredor" value="#{credorFaces.selectedCredor.bairrocredor}"/>
+                    
+                    <p:outputLabel id="lbcidade" value="Cidade: " for="cidade"/>
+                    <p:inputText id="cidade" value="#{credorFaces.selectedCredor.cidade}"/>
+                    
+                    <p:outputLabel id="lbuf" value="UF: " for="ufcredor"/>
+                    <p:inputText id="ufcredor" value="#{credorFaces.selectedCredor.ufcredor}"/>
+                    
+                      <f:facet name="footer">
+                        <center>
+                            <p:commandButton value="Inserir" action="#{credorFaces.novoCredor()}" update=":formcredor:msg" immediate="true"/>    
+                            <p:commandButton value="Gravar" action="#{credorFaces.adicionarCredor()}" update=":formcredor"/>
+                            <p:button value="Voltar" outcome="/menu/principal.jsf"/>
+                            <br/>
+                              #{sistema.NOMESISTEMA} v#{sistema.VERSION}
+                        </center>
+                    </f:facet>
+                    </p:panelGrid>
+                </p:ajaxStatus>
+                
+               <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
+ 
+                <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+                    <center>
+                        <img src="../resources/img/kOnzy.gif" width="32px" height="32px" alt="" /><br/>
+                        <h:outputText value="Carregando..."/>
+                    </center>
+                </p:dialog>
+        </h:form>
+    </h:body>
+</html>
+

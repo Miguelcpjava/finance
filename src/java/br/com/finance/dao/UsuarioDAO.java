@@ -12,17 +12,16 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.Restrictions;
 
 /**
  *
  * @author Miguel
  */
-@ManagedBean
-@ViewScoped
+
 public class UsuarioDAO extends GenericDao implements Serializable{
     private static final long serialVersionUID = -5005808735140804037L;
 
@@ -55,28 +54,13 @@ public class UsuarioDAO extends GenericDao implements Serializable{
        public List<Usuario> getUsers(){
         return getCleanListOfObjects(Usuario.class,"from Usuario usr");
     }
-       public String senha(String Login) {
-          
-           String sql = "SELECT u.password FROM Usuario u WHERE u.login=:name";
-           Query qr = HibernateUtil.getSession().createQuery(sql);
-           qr.setParameter("name", Login);
-           pass = qr.uniqueResult().toString();
-           System.out.println("Resultado "+pass);
-        try {
-            passclean = c.decriptar(c.CHAVE, pass);
-            System.out.println("Buscou "+passclean);
-              
-        } catch (Throwable ex) {
-            Logger.getLogger(UsuarioDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-         return passclean;
-       }
     public Usuario validarLoginUser(String user, String password) throws Throwable {
 
         String jsql = "SELECT u FROM Usuario u WHERE u.login=:loginname and u.status='true'";
         try {
-            Query query = HibernateUtil.getSession().createQuery(jsql);
-            query.setParameter("loginname", user);
+            Criteria query = HibernateUtil.getSession().createCriteria(Usuario.class);
+            query.add(Restrictions.eq("login",user));
+            query.add(Restrictions.eq("password", password));
 
             List l = query.list();
 

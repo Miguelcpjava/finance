@@ -40,5 +40,8 @@ public class HibernateUtil {
         return SessionToReturn;
 
     }
+    public static void closeSession(){
+        sessionFactory.close();
+    }
     
 }
